@@ -58,11 +58,11 @@ case "$1" in
 esac
 
 # Should look something like this:
-# [OOO---]
-OPENING_CHAR='['
-CLOSING_CHAR=']'
-ELAPSED_CHAR='O'
-REMAINING_CHAR='-'
+# ■■■□□□
+OPENING_CHAR=''
+CLOSING_CHAR=''
+ELAPSED_CHAR='■'
+REMAINING_CHAR='□'
 SUMMARY_LENGTH=6
 
 function printState {
