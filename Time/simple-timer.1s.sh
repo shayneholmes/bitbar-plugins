@@ -57,7 +57,30 @@ case "$1" in
   ;;
 esac
 
+# Should look something like this:
+# [OOO---]
+OPENING_CHAR='['
+CLOSING_CHAR=']'
+ELAPSED_CHAR='O'
+REMAINING_CHAR='-'
+SUMMARY_LENGTH=6
 
+function printState {
+  local REMAINING="$(timeLeft $WORK_TIME_IN_SECONDS)"
+  local TOTAL="$WORK_TIME_IN_SECONDS"
+  local ELAPSED="$((TOTAL - REMAINING))"
+  local COMPLETED_BARS="$((ELAPSED * (SUMMARY_LENGTH + 1) / TOTAL))"
+  local OUTPUT="$OPENING_CHAR"
+  for i in $(seq 1 $SUMMARY_LENGTH); do
+    if [ $i -lt $COMPLETED_BARS ]; then
+      OUTPUT+="$ELAPSED_CHAR"
+    else
+      OUTPUT+="$REMAINING_CHAR"
+    fi
+  done
+  OUTPUT+="$CLOSING_CHAR"
+  echo "$OUTPUT"
+}
 
 function timeLeft {
     local FROM=$1
@@ -90,14 +113,14 @@ case "$STATUS" in
     if (( "$TIME_LEFT" < 0 )); then
         breakMode
     fi
-    printTime "$TIME_LEFT" "red"
+    printState "$TIME_LEFT" "red"
   ;;
 "2")
     TIME_LEFT=$(timeLeft $BREAK_TIME_IN_SECONDS)
     if (("$TIME_LEFT" < 0)); then
         workMode
     fi
-    printTime "$TIME_LEFT" "green"
+    printState "$TIME_LEFT" "green"
   ;;
 esac
 
