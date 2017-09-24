@@ -81,7 +81,7 @@ function printState {
     fi
   done
   OUTPUT+="$CLOSING_CHAR"
-  echo "$OUTPUT"
+  echo "$OUTPUT | $(getColor)"
 }
 
 function getCurrentTotal {
@@ -114,6 +114,24 @@ function getSeconds {
 
 function getMinutes {
     echo $(($1 / 60))
+}
+
+function getColor {
+  echo "color="
+  case "$STATUS" in
+    # STOP MODE
+    "0")
+      echo "gray"
+      ;;
+    "1")
+      # WORK
+      echo "blue"
+      ;;
+    "2")
+      # BREAK
+      echo "green"
+      ;;
+  esac
 }
 
 case "$STATUS" in
