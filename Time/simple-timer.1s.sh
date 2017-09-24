@@ -65,8 +65,7 @@ SUMMARY_LENGTH=6
 
 function printState {
   local TOTAL="$(getCurrentTotal)"
-  local REMAINING="$(timeLeft $TOTAL)"
-  local ELAPSED="$((TOTAL - REMAINING))"
+  local ELAPSED="$(secondsElapsed)"
   local COMPLETED_BARS="$((ELAPSED * (SUMMARY_LENGTH + 1) / TOTAL))"
   if [ $STATUS -eq 0 ]; then #DISABLED
     COMPLETED_BARS=0
@@ -100,11 +99,16 @@ function getCurrentTotal {
   esac
 }
 
-function timeLeft {
-  local FROM=$1
-  local TIME_DIFF=$((CURRENT_TIME - TIME))
-  local TIME_LEFT=$((FROM - TIME_DIFF))
-  echo "$TIME_LEFT";
+function secondsElapsed {
+  local ELAPSED=$((CURRENT_TIME - TIME))
+  echo "$ELAPSED";
+}
+
+function secondsRemaining {
+  local TOTAL="$(getCurrentTotal)"
+  local ELAPSED="$(secondsElapsed)"
+  local REMAINING=$((TOTAL - ELAPSED))
+  echo "$REMAINING";
 }
 
 function getColor {
@@ -131,13 +135,13 @@ case "$STATUS" in
     # STOP MODE
     ;;
   "1")
-    TIME_LEFT=$(timeLeft $WORK_TIME_IN_SECONDS)
+    TIME_LEFT=$(secondsRemaining)
     if (( "$TIME_LEFT" < 0 )); then
       breakMode
     fi
     ;;
   "2")
-    TIME_LEFT=$(timeLeft $BREAK_TIME_IN_SECONDS)
+    TIME_LEFT=$(secondsRemaining)
     if (("$TIME_LEFT" < 0)); then
       workMode
     fi
