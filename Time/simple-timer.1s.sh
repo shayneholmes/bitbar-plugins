@@ -11,7 +11,6 @@ WORK_TIME=15
 BREAK_TIME=5
 
 SAVE_LOCATION=$TMPDIR/simple-timer
-TOMATO='🍅'
 
 WORK_TIME_IN_SECONDS=$((WORK_TIME * 60))
 BREAK_TIME_IN_SECONDS=$((BREAK_TIME * 60))
@@ -99,12 +98,6 @@ function getSeconds {
 
 function getMinutes {
     echo $(($1 / 60))
-}
-
-function printTime {
-    SECONDS=$(getSeconds "$1")
-    MINUTES=$(getMinutes "$1")
-    printf "%s %02d:%02d| color=%s\n" "$TOMATO" "$MINUTES" "$SECONDS"  "$2"
 }
 
 case "$STATUS" in
