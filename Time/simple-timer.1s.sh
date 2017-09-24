@@ -81,7 +81,6 @@ function printState {
     fi
   done
   OUTPUT+="$CLOSING_CHAR"
-  OUTPUT+=" $REMAINING"
   echo "$OUTPUT"
 }
 
