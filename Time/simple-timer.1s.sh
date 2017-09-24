@@ -133,6 +133,7 @@ function getColor {
   esac
 }
 
+# Check for timeouts
 case "$STATUS" in
   "0")
     # STOP MODE
