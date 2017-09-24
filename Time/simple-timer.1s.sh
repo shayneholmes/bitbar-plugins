@@ -19,41 +19,40 @@ CURRENT_TIME=$(date +%s)
 
 if [ -f "$SAVE_LOCATION" ];
 then
-    DATA=$(cat "$SAVE_LOCATION")
-
+  DATA=$(cat "$SAVE_LOCATION")
 else
-    DATA="$CURRENT_TIME|0"
+  DATA="$CURRENT_TIME|0"
 fi
 
 TIME=$(echo "$DATA" | cut -d "|" -f1)
 STATUS=$(echo "$DATA" | cut -d "|" -f2)
 
 function changeStatus {
-    echo "$CURRENT_TIME|$1" > "$SAVE_LOCATION";
-    # osascript -e "display notification \"$2\" with title \"$TOMATO Pomodoro\" sound name \"$3\"" &> /dev/null
+  echo "$CURRENT_TIME|$1" > "$SAVE_LOCATION";
+  # osascript -e "display notification \"$2\" with title \"$TOMATO Pomodoro\" sound name \"$3\"" &> /dev/null
 }
 
 function breakMode {
-    changeStatus "2" "Break Mode" "Glass"
+  changeStatus "2" "Break Mode" "Glass"
 }
 
 function workMode {
-    changeStatus "1" "Work Mode" "Blow"
+  changeStatus "1" "Work Mode" "Blow"
 }
 
 case "$1" in
-"work")
+  "work")
     workMode
     exit
-  ;;
-"break")
+    ;;
+  "break")
     breakMode
     exit
-  ;;
-"disable")
+    ;;
+  "disable")
     changeStatus "0" "Disabled"
     exit
-  ;;
+    ;;
 esac
 
 # Should look something like this:
@@ -86,8 +85,8 @@ function printState {
 
 function getCurrentTotal {
   case "$STATUS" in
-    # STOP MODE
     "0")
+      # STOP MODE
       echo "10000000"
       ;;
     "1")
@@ -102,25 +101,25 @@ function getCurrentTotal {
 }
 
 function timeLeft {
-    local FROM=$1
-    local TIME_DIFF=$((CURRENT_TIME - TIME))
-    local TIME_LEFT=$((FROM - TIME_DIFF))
-    echo "$TIME_LEFT";
+  local FROM=$1
+  local TIME_DIFF=$((CURRENT_TIME - TIME))
+  local TIME_LEFT=$((FROM - TIME_DIFF))
+  echo "$TIME_LEFT";
 }
 
 function getSeconds {
-    echo $(($1 % 60))
+  echo $(($1 % 60))
 }
 
 function getMinutes {
-    echo $(($1 / 60))
+  echo $(($1 / 60))
 }
 
 function getColor {
   echo "color="
   case "$STATUS" in
-    # STOP MODE
     "0")
+      # STOP MODE
       echo "gray"
       ;;
     "1")
@@ -135,21 +134,21 @@ function getColor {
 }
 
 case "$STATUS" in
-# STOP MODE
-"0")
-  ;;
-"1")
+  "0")
+    # STOP MODE
+    ;;
+  "1")
     TIME_LEFT=$(timeLeft $WORK_TIME_IN_SECONDS)
     if (( "$TIME_LEFT" < 0 )); then
-        breakMode
+      breakMode
     fi
-  ;;
-"2")
+    ;;
+  "2")
     TIME_LEFT=$(timeLeft $BREAK_TIME_IN_SECONDS)
     if (("$TIME_LEFT" < 0)); then
-        workMode
+      workMode
     fi
-  ;;
+    ;;
 esac
 echo $(printState)
 
