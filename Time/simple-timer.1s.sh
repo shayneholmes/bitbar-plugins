@@ -151,8 +151,8 @@ case "$STATUS" in
     fi
     ;;
 esac
-echo $(printState)
 
+echo $(printState)
 echo "---";
 echo "👔 Work | bash=\"$0\" param1=work terminal=false refresh=true"
 echo "☕ Break | bash=\"$0\" param1=break terminal=false refresh=true"
