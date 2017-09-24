@@ -154,6 +154,6 @@ esac
 echo $(printState)
 
 echo "---";
-echo "👔 Work | bash=\"$0\" param1=work terminal=false"
-echo "☕ Break | bash=\"$0\" param1=break terminal=false"
-echo "🔌 Disable | bash=\"$0\" param1=disable terminal=false"
+echo "👔 Work | bash=\"$0\" param1=work terminal=false refresh=true"
+echo "☕ Break | bash=\"$0\" param1=break terminal=false refresh=true"
+echo "🔌 Disable | bash=\"$0\" param1=disable terminal=false refresh=true"
