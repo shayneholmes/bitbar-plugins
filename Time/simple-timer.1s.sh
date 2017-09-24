@@ -107,14 +107,6 @@ function timeLeft {
   echo "$TIME_LEFT";
 }
 
-function getSeconds {
-  echo $(($1 % 60))
-}
-
-function getMinutes {
-  echo $(($1 / 60))
-}
-
 function getColor {
   echo "color="
   case "$STATUS" in
