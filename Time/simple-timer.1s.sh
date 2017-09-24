@@ -19,41 +19,41 @@ CURRENT_TIME=$(date +%s)
 
 if [ -f "$SAVE_LOCATION" ];
 then
-    DATA=$(cat "$SAVE_LOCATION")
+  DATA=$(cat "$SAVE_LOCATION")
 
 else
-    DATA="$CURRENT_TIME|0"
+  DATA="$CURRENT_TIME|0"
 fi
 
 TIME=$(echo "$DATA" | cut -d "|" -f1)
 STATUS=$(echo "$DATA" | cut -d "|" -f2)
 
 function changeStatus {
-    echo "$CURRENT_TIME|$1" > "$SAVE_LOCATION";
-    # osascript -e "display notification \"$2\" with title \"$TOMATO Pomodoro\" sound name \"$3\"" &> /dev/null
+  echo "$CURRENT_TIME|$1" > "$SAVE_LOCATION";
+  # osascript -e "display notification \"$2\" with title \"$TOMATO Pomodoro\" sound name \"$3\"" &> /dev/null
 }
 
 function breakMode {
-    changeStatus "2" "Break Mode" "Glass"
+  changeStatus "2" "Break Mode" "Glass"
 }
 
 function workMode {
-    changeStatus "1" "Work Mode" "Blow"
+  changeStatus "1" "Work Mode" "Blow"
 }
 
 case "$1" in
-"work")
+  "work")
     workMode
     exit
-  ;;
-"break")
+    ;;
+  "break")
     breakMode
     exit
-  ;;
-"disable")
+    ;;
+  "disable")
     changeStatus "0" "Disabled"
     exit
-  ;;
+    ;;
 esac
 
 # Should look something like this:
@@ -88,32 +88,32 @@ function getCurrentTotal {
   case "$STATUS" in
     # STOP MODE
     "0")
-      echo "10000000"
-      ;;
-    "1")
-      # WORK
-      echo "$WORK_TIME_IN_SECONDS"
-      ;;
-    "2")
-      # BREAK
-      echo "$BREAK_TIME_IN_SECONDS"
-      ;;
-  esac
+    echo "10000000"
+    ;;
+  "1")
+    # WORK
+    echo "$WORK_TIME_IN_SECONDS"
+    ;;
+  "2")
+    # BREAK
+    echo "$BREAK_TIME_IN_SECONDS"
+    ;;
+esac
 }
 
 function timeLeft {
-    local FROM=$1
-    local TIME_DIFF=$((CURRENT_TIME - TIME))
-    local TIME_LEFT=$((FROM - TIME_DIFF))
-    echo "$TIME_LEFT";
+  local FROM=$1
+  local TIME_DIFF=$((CURRENT_TIME - TIME))
+  local TIME_LEFT=$((FROM - TIME_DIFF))
+  echo "$TIME_LEFT";
 }
 
 function getSeconds {
-    echo $(($1 % 60))
+  echo $(($1 % 60))
 }
 
 function getMinutes {
-    echo $(($1 / 60))
+  echo $(($1 / 60))
 }
 
 function getColor {
@@ -121,34 +121,34 @@ function getColor {
   case "$STATUS" in
     # STOP MODE
     "0")
-      echo "gray"
-      ;;
-    "1")
-      # WORK
-      echo "blue"
-      ;;
-    "2")
-      # BREAK
-      echo "green"
-      ;;
-  esac
+    echo "gray"
+    ;;
+  "1")
+    # WORK
+    echo "blue"
+    ;;
+  "2")
+    # BREAK
+    echo "green"
+    ;;
+esac
 }
 
 case "$STATUS" in
-# STOP MODE
-"0")
+  # STOP MODE
+  "0")
   ;;
 "1")
-    TIME_LEFT=$(timeLeft $WORK_TIME_IN_SECONDS)
-    if (( "$TIME_LEFT" < 0 )); then
-        breakMode
-    fi
+  TIME_LEFT=$(timeLeft $WORK_TIME_IN_SECONDS)
+  if (( "$TIME_LEFT" < 0 )); then
+    breakMode
+  fi
   ;;
 "2")
-    TIME_LEFT=$(timeLeft $BREAK_TIME_IN_SECONDS)
-    if (("$TIME_LEFT" < 0)); then
-        workMode
-    fi
+  TIME_LEFT=$(timeLeft $BREAK_TIME_IN_SECONDS)
+  if (("$TIME_LEFT" < 0)); then
+    workMode
+  fi
   ;;
 esac
 echo $(printState)
