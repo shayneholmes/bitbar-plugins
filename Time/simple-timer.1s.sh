@@ -65,8 +65,8 @@ REMAINING_CHAR='□'
 SUMMARY_LENGTH=6
 
 function printState {
-  local REMAINING="$(timeLeft $WORK_TIME_IN_SECONDS)"
-  local TOTAL="$WORK_TIME_IN_SECONDS"
+  local TOTAL="$(getCurrentTotal)"
+  local REMAINING="$(timeLeft $TOTAL)"
   local ELAPSED="$((TOTAL - REMAINING))"
   local COMPLETED_BARS="$((ELAPSED * (SUMMARY_LENGTH + 1) / TOTAL))"
   if [ $STATUS -eq 0 ]; then #DISABLED
@@ -82,6 +82,23 @@ function printState {
   done
   OUTPUT+="$CLOSING_CHAR"
   echo "$OUTPUT"
+}
+
+function getCurrentTotal {
+  case "$STATUS" in
+    # STOP MODE
+    "0")
+      echo "10000000"
+      ;;
+    "1")
+      # WORK
+      echo "$WORK_TIME_IN_SECONDS"
+      ;;
+    "2")
+      # BREAK
+      echo "$BREAK_TIME_IN_SECONDS"
+      ;;
+  esac
 }
 
 function timeLeft {
