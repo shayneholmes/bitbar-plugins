@@ -70,6 +70,9 @@ function printState {
   local TOTAL="$WORK_TIME_IN_SECONDS"
   local ELAPSED="$((TOTAL - REMAINING))"
   local COMPLETED_BARS="$((ELAPSED * (SUMMARY_LENGTH + 1) / TOTAL))"
+  if [ $STATUS -eq 0 ]; then #DISABLED
+    COMPLETED_BARS=0
+  fi
   local OUTPUT="$OPENING_CHAR"
   for i in $(seq 1 $SUMMARY_LENGTH); do
     if [ $i -lt $COMPLETED_BARS ]; then
@@ -107,23 +110,21 @@ function printTime {
 case "$STATUS" in
 # STOP MODE
 "0")
-    echo "$TOMATO"
   ;;
 "1")
     TIME_LEFT=$(timeLeft $WORK_TIME_IN_SECONDS)
     if (( "$TIME_LEFT" < 0 )); then
         breakMode
     fi
-    printState "$TIME_LEFT" "red"
   ;;
 "2")
     TIME_LEFT=$(timeLeft $BREAK_TIME_IN_SECONDS)
     if (("$TIME_LEFT" < 0)); then
         workMode
     fi
-    printState "$TIME_LEFT" "green"
   ;;
 esac
+echo $(printState)
 
 echo "---";
 echo "👔 Work | bash=\"$0\" param1=work terminal=false"
