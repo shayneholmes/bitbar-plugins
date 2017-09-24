@@ -7,14 +7,14 @@
 # <bitbar.desc>Simple timer with state representation</bitbar.desc>
 # <bitbar.image>None yet (imgur link pending)</bitbar.image>
 
-WORK_TIME=10
-BREAK_TIME=10
+WORK_TIME=15
+BREAK_TIME=5
 
 SAVE_LOCATION=$TMPDIR/simple-timer
 TOMATO='🍅'
 
-WORK_TIME_IN_SECONDS=$((WORK_TIME * 1))
-BREAK_TIME_IN_SECONDS=$((BREAK_TIME * 1))
+WORK_TIME_IN_SECONDS=$((WORK_TIME * 60))
+BREAK_TIME_IN_SECONDS=$((BREAK_TIME * 60))
 
 CURRENT_TIME=$(date +%s)
 
