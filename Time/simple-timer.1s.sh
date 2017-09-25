@@ -12,6 +12,8 @@ BREAK_TIME=5
 
 SAVE_LOCATION=$TMPDIR/simple-timer
 
+STATUS_LOG=$TMPDIR/status.tmp
+
 WORK_TIME_IN_SECONDS=$((WORK_TIME * 1))
 BREAK_TIME_IN_SECONDS=$((BREAK_TIME * 1))
 
@@ -30,6 +32,10 @@ STATUS=$(echo "$DATA" | cut -d "|" -f2)
 function changeStatus {
   echo "$CURRENT_TIME|$1" > "$SAVE_LOCATION";
   # osascript -e "display notification \"$2\" with title \"$TOMATO Pomodoro\" sound name \"$3\"" &> /dev/null
+}
+
+function writeCompletion {
+  echo "$STATUS" >> "$STATUS_LOG"
 }
 
 function breakMode {
@@ -137,12 +143,14 @@ case "$STATUS" in
   "1")
     TIME_LEFT=$(secondsRemaining)
     if (( "$TIME_LEFT" < 0 )); then
+      writeCompletion
       breakMode
     fi
     ;;
   "2")
     TIME_LEFT=$(secondsRemaining)
     if (("$TIME_LEFT" < 0)); then
+      writeCompletion
       workMode
     fi
     ;;
