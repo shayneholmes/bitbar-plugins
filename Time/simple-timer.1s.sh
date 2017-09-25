@@ -31,11 +31,11 @@ STATUS=$(echo "$DATA" | cut -d "|" -f2)
 
 function changeStatus {
   echo "$CURRENT_TIME|$1" > "$SAVE_LOCATION";
-  # osascript -e "display notification \"$2\" with title \"$TOMATO Pomodoro\" sound name \"$3\"" &> /dev/null
 }
 
 function writeCompletion {
   echo "$STATUS" >> "$STATUS_LOG"
+  osascript -e "display notification \"Finished $(printTimerName)\" with title \"Timer\" sound name \"$(printTimerCompletionSound)\"" &> /dev/null
 }
 
 function breakMode {
@@ -90,6 +90,19 @@ function printBars {
   done
   OUTPUT+="$CLOSING_CHAR"
   echo "$OUTPUT"
+}
+
+function printTimerCompletionSound {
+  case "$STATUS" in
+    "1")
+      # work
+      echo "Glass"
+      ;;
+    "2")
+      # break
+      echo "Glass"
+      ;;
+  esac
 }
 
 function printTimerName {
