@@ -3,6 +3,8 @@
 
 # Use a string to represent the possible combinations in a trinary format: 0 is nothing, 1 is work (up), 2 is a break (down)
 
+import os
+
 def encodeStatus( numberList ):
     size = len(numberList)
     i = 0
@@ -33,4 +35,4 @@ def getNumbersFromFile( fileName ):
     print(arr)
     return arr
 
-print(encodeStatus(getNumbersFromFile('./status.tmp'))).encode('utf-8')
+print(encodeStatus(getNumbersFromFile(os.environ['TMPDIR'] + '/status.tmp'))).encode('utf-8')
