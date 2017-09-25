@@ -32,7 +32,6 @@ def encodeTwoDigits( first, second ):
 def getNumbersFromFile( fileName ):
     with open(fileName) as f:
         arr = [int(x) for line in f for x in line.split()]
-    print(arr)
     return arr
 
 print(encodeStatus(getNumbersFromFile(os.environ['TMPDIR'] + '/status.tmp'))).encode('utf-8')
