@@ -27,4 +27,10 @@ def encodeTwoDigits( first, second ):
     index = first * 3 + second
     return status[index]
 
-print(encodeStatus([1,2,1,2,2,1,3,2])).encode('utf-8')
+def getNumbersFromFile( fileName ):
+    with open(fileName) as f:
+        arr = [int(x) for line in f for x in line.split()]
+    print(arr)
+    return arr
+
+print(encodeStatus(getNumbersFromFile('./status.tmp'))).encode('utf-8')
