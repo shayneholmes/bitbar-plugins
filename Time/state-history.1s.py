@@ -17,10 +17,8 @@ def encodeStatus( numberList ):
         i += 2
     return output
 
-
 def encodeTwoDigits( first, second ):
     status = u' ▝▗▘▀▚▖▞▄'
-
     # Range checking
     if first > 2:
         first = 0 
