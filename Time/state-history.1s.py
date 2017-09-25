@@ -7,6 +7,8 @@ import os
 
 def encodeStatus( numberList ):
     size = len(numberList)
+    if size == 0:
+        return ":("
     i = 0
     output = ''
     # Since each character encodes two elements, pad the list with
@@ -35,3 +37,4 @@ def getNumbersFromFile( fileName ):
     return arr
 
 print(encodeStatus(getNumbersFromFile(os.environ['TMPDIR'] + '/status.tmp'))).encode('utf-8')
+print('Reset | bash=echo param1=">" param2="$TMPDIR/status.tmp" terminal=true refresh=true')
