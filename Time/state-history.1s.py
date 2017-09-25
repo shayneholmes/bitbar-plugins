@@ -22,7 +22,11 @@ def encodeStatus( numberList ):
     return output
 
 def encodeTwoDigits( first, second ):
-    status = u' ▝▗▘▀▚▖▞▄'
+    # Note that the first character is an underline, even though (0,0) should
+    # be a space. This because there's no fixed-width block space character in
+    # Unicode. Preserving the width seems more important than showing nothing,
+    # but change this to an ASCII space to show nothing for pairs of zero.
+    status = u'▁▝▗▘▀▚▖▞▄'
     # Range checking
     if first > 2:
         first = 0 
