@@ -14,8 +14,8 @@ SAVE_LOCATION=$TMPDIR/simple-timer
 
 STATUS_LOG=$TMPDIR/status.tmp
 
-WORK_TIME_IN_SECONDS=$((WORK_TIME * 1))
-BREAK_TIME_IN_SECONDS=$((BREAK_TIME * 1))
+WORK_TIME_IN_SECONDS=$((WORK_TIME * 60))
+BREAK_TIME_IN_SECONDS=$((BREAK_TIME * 60))
 
 CURRENT_TIME=$(date +%s)
 
@@ -46,6 +46,10 @@ function workMode {
   changeStatus "1" "Work Mode" "Blow"
 }
 
+function disable {
+  changeStatus "0" "Disabled"
+}
+
 case "$1" in
   "work")
     workMode
@@ -56,7 +60,7 @@ case "$1" in
     exit
     ;;
   "disable")
-    changeStatus "0" "Disabled"
+    disable
     exit
     ;;
 esac
@@ -144,14 +148,14 @@ case "$STATUS" in
     TIME_LEFT=$(secondsRemaining)
     if (( "$TIME_LEFT" < 0 )); then
       writeCompletion
-      breakMode
+      disable
     fi
     ;;
   "2")
     TIME_LEFT=$(secondsRemaining)
     if (("$TIME_LEFT" < 0)); then
       writeCompletion
-      workMode
+      disable
     fi
     ;;
 esac
