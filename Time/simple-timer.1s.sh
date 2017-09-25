@@ -154,25 +154,13 @@ function printTime {
 }
 
 # Check for timeouts
-case "$STATUS" in
-  "0")
-    # STOP MODE
-    ;;
-  "1")
-    TIME_LEFT=$(secondsRemaining)
-    if (( "$TIME_LEFT" < 0 )); then
-      writeCompletion
-      disable
-    fi
-    ;;
-  "2")
-    TIME_LEFT=$(secondsRemaining)
-    if (("$TIME_LEFT" < 0)); then
-      writeCompletion
-      disable
-    fi
-    ;;
-esac
+if [ $STATUS -ne 0 ]; then
+  TIME_LEFT=$(secondsRemaining)
+  if (( "$TIME_LEFT" < 0 )); then
+    writeCompletion
+    disable
+  fi
+fi
 
 echo $(printState)
 echo "---";
