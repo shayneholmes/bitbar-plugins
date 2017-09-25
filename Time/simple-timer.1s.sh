@@ -153,6 +153,14 @@ function printTime {
   printf "%02d:%02d" $MINUTES $SECONDS
 }
 
+function printTimeRemaining {
+  if [ $STATUS -eq 0 ]; then
+    echo " --:--"
+  else
+    echo "$(printTime "$(secondsRemaining)")"
+  fi
+}
+
 # Check for timeouts
 if [ $STATUS -ne 0 ]; then
   TIME_LEFT=$(secondsRemaining)
@@ -164,7 +172,7 @@ fi
 
 echo $(printState)
 echo "---";
-echo "$(printTime "$(secondsRemaining)")"
+echo "$(printTimeRemaining)"
 echo "👔 Work | bash=\"$0\" param1=work terminal=false refresh=true"
 echo "☕ Break | bash=\"$0\" param1=break terminal=false refresh=true"
 echo "🔌 Disable | bash=\"$0\" param1=disable terminal=false refresh=true"
