@@ -8,7 +8,7 @@
 # be a space. This because there's no fixed-width block space character in
 # Unicode. Preserving the width seems more important than showing nothing,
 # but change this to an ASCII space to show nothing for pairs of zero.
-status = u'▁▝▗▘▀▚▖▞▄'
+sparklinePairs = u'▁▝▗▘▀▚▖▞▄'
 
 import os
 
@@ -35,7 +35,7 @@ def encodeTwoDigits( first, second ):
     if second > 2:
         second = 0 
     index = first * 3 + second
-    return status[index]
+    return sparklinePairs[index]
 
 def getNumbersFromFile( fileName ):
     with open(fileName) as f:
