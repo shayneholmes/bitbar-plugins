@@ -4,11 +4,11 @@
 # Use a string to represent the possible combinations in a trinary format: 0 is
 # nothing, 1 is work (up), 2 is a break (down).
 #
-# Note that the first character is a line, even though (0,0) should be an empty
-# space. This because there's no fixed-width block space character in Unicode.
-# Preserving the width seems more important than showing nothing, but change
-# this to an ASCII space to show nothing for pairs of zero.
-sparklinePairs = u'─▝▗▘▀▚▖▞▄'
+# Note that the first character is an underline, even though (0,0) should
+# be a space. This because there's no fixed-width block space character in
+# Unicode. Preserving the width seems more important than showing nothing,
+# but change this to an ASCII space to show nothing for pairs of zero.
+sparklinePairs = u'▁▝▗▘▀▚▖▞▄'
 
 emptyStatusString = u"no history"
 
