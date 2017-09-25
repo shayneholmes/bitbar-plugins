@@ -10,12 +10,14 @@
 # but change this to an ASCII space to show nothing for pairs of zero.
 sparklinePairs = u'▁▝▗▘▀▚▖▞▄'
 
+emptyStatusString = u"no history"
+
 import os
 
 def encodeStatus( numberList ):
     size = len(numberList)
     if size == 0:
-        return ":("
+        return emptyStatusString
     i = 0
     output = ''
     # Since each character encodes two elements, pad the list with
