@@ -50,6 +50,7 @@ function disable {
   changeStatus "0" "Disabled"
 }
 
+# Support changing from menu items
 case "$1" in
   "work")
     workMode
