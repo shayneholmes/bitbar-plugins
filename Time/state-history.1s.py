@@ -46,4 +46,4 @@ def getFileName():
     return os.environ['TMPDIR'] + '/status.tmp'
 
 print(encodeStatus(getNumbersFromFile(getFileName()))).encode('utf-8')
-print('Reset | bash=echo param1=">" param2="' + getFileName() + '" terminal=true refresh=true')
+print('Reset | bash=echo param1=">" param2="' + getFileName() + '" terminal=false refresh=true')
