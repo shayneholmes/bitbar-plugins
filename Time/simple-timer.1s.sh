@@ -73,7 +73,7 @@ ELAPSED_CHAR='■'
 REMAINING_CHAR='□'
 SUMMARY_LENGTH=6
 
-function printState {
+function printBars {
   local TOTAL="$(getCurrentTotal)"
   local ELAPSED="$(secondsElapsed)"
   local COMPLETED_BARS="$((ELAPSED * (SUMMARY_LENGTH + 1) / TOTAL))"
@@ -90,6 +90,20 @@ function printState {
   done
   OUTPUT+="$CLOSING_CHAR"
   echo "$OUTPUT"
+}
+
+function printTimerName {
+  case "$STATUS" in
+    "0")
+      echo ""
+      ;;
+    "1")
+      echo "work: "
+      ;;
+    "2")
+      echo "break: "
+      ;;
+  esac
 }
 
 function getCurrentTotal {
@@ -152,7 +166,7 @@ if [ $STATUS -ne 0 ]; then
   fi
 fi
 
-echo $(printState)
+echo "$(printTimerName) $(printBars)"
 echo "---";
 echo "$(printTimeRemaining)"
 echo "👔 Work | bash=\"$0\" param1=work terminal=false refresh=true"
