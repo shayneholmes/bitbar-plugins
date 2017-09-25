@@ -42,5 +42,8 @@ def getNumbersFromFile( fileName ):
         arr = [int(x) for line in f for x in line.split()]
     return arr
 
-print(encodeStatus(getNumbersFromFile(os.environ['TMPDIR'] + '/status.tmp'))).encode('utf-8')
-print('Reset | bash=echo param1=">" param2="$TMPDIR/status.tmp" terminal=true refresh=true')
+def getFileName():
+    return os.environ['TMPDIR'] + '/status.tmp'
+
+print(encodeStatus(getNumbersFromFile(getFileName()))).encode('utf-8')
+print('Reset | bash=echo param1=">" param2="' + getFileName() + '" terminal=true refresh=true')
