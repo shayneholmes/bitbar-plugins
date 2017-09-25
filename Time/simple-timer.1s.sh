@@ -112,10 +112,10 @@ function printTimerName {
       echo ""
       ;;
     "1")
-      echo "work: "
+      echo "work"
       ;;
     "2")
-      echo "break: "
+      echo "break"
       ;;
   esac
 }
@@ -180,7 +180,8 @@ if [ $STATUS -ne 0 ]; then
   fi
 fi
 
-echo "$(printTimerName) $(printBars)"
+LABEL=$(printTimerName)
+echo "${LABEL:+$LABEL: }$(printBars)"
 echo "---";
 echo "$(printTimeRemaining)"
 echo "👔 Work | bash=\"$0\" param1=work terminal=false refresh=true"
