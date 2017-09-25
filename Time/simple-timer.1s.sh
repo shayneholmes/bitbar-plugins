@@ -147,6 +147,12 @@ function getColor {
   esac
 }
 
+function printTime {
+  SECONDS=$(getSeconds "$1")
+  MINUTES=$(getMinutes "$1")
+  printf "%02d:%02d" $MINUTES $SECONDS
+}
+
 # Check for timeouts
 case "$STATUS" in
   "0")
@@ -170,6 +176,7 @@ esac
 
 echo $(printState)
 echo "---";
+echo "$(printTime "$(secondsRemaining)")"
 echo "👔 Work | bash=\"$0\" param1=work terminal=false refresh=true"
 echo "☕ Break | bash=\"$0\" param1=break terminal=false refresh=true"
 echo "🔌 Disable | bash=\"$0\" param1=disable terminal=false refresh=true"
