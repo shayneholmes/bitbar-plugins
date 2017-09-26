@@ -4,17 +4,16 @@ import base64
 import mmap
 import png
 
-pixels = ['110010010011',
-          '101011010100',
-          '110010110101',
-          '100010010011']
+height=16
+barwidth=6
 
-pixels = [[int(x) for x in row] for row in pixels]
+def generateSinglePixelSparklines( data ):
+    pos = lambda k: 1 if k > 0 else 0
+    neg = lambda k: 0 if k > 0 else 1
+    return [[func(i) for i in data] for func in (pos, neg)]
 
 def scalePixels( pixels, x, y ):
     return [[i for i in row for j in range(x)] for row in pixels for j in range(y)]
-
-pixels = scalePixels(pixels, 2, 2)
 
 def encodePngFromPixels( pixels ):
     lfunc = lambda k: 0
@@ -27,6 +26,9 @@ def encodePngFromPixels( pixels ):
     imgData = base64.b64encode(mm.read(size))
     return imgData
 
+data = [1,-1,1,-1,1,-1,1,1,1,-1]
+pixels = generateSinglePixelSparklines(data)
+pixels = scalePixels(pixels, barwidth, height / 2)
 print("Test | templateImage=" + encodePngFromPixels(pixels))
 print("---")
 print(pixels)
