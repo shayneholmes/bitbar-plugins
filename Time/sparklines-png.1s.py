@@ -4,6 +4,12 @@ import base64
 import mmap
 import os
 import png
+import sys
+
+if len(sys.argv) > 1:
+    if sys.argv[1] == 'reset':
+        os.system('>' + getFileName())
+        sys.exit()
 
 height=16
 barwidth=6
@@ -41,3 +47,4 @@ pixels = scalePixels(pixels, barwidth, height / 2)
 print("| templateImage=" + encodePngFromPixels(pixels))
 print("---")
 print(data)
+print('Reset | terminal=false refresh=true bash="' + os.path.abspath(__file__) + '" param1=reset')
