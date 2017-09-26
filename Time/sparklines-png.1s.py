@@ -8,9 +8,9 @@ height=16
 barwidth=6
 
 def generateSinglePixelSparklines( data ):
-    pos = lambda k: 1 if k > 0 else 0
-    neg = lambda k: 0 if k > 0 else 1
-    return [[func(i) for i in data] for func in (pos, neg)]
+    win = lambda k: 1 if k == 1 else 0
+    loss = lambda k: 1 if k == 2 else 0
+    return [[func(i) for i in data] for func in (win, loss)]
 
 def scalePixels( pixels, x, y ):
     return [[i for i in row for j in range(x)] for row in pixels for j in range(y)]
