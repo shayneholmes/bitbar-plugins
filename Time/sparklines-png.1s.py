@@ -11,6 +11,11 @@ pixels = ['110010010011',
 
 pixels = [[int(x) for x in row] for row in pixels]
 
+def scalePixels( pixels, x, y ):
+    return [[i for i in row for j in range(x)] for row in pixels for j in range(y)]
+
+pixels = scalePixels(pixels, 2, 2)
+
 def encodePngFromPixels( pixels ):
     lfunc = lambda k: 0
     afunc = lambda k: 255 if k > 0 else 0
