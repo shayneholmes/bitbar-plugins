@@ -12,7 +12,7 @@ if len(sys.argv) > 1:
         sys.exit()
 
 height=16
-barwidth=6
+barwidth=4
 
 def getFileName():
     return os.environ['TMPDIR'] + '/status.tmp'
@@ -20,6 +20,8 @@ def getFileName():
 def getNumbersFromFile( fileName ):
     with open(fileName) as f:
         arr = [int(x) for line in f for x in line.split()]
+    if len(arr) == 0:
+        arr = [0]
     return arr
 
 def generateSinglePixelSparklines( data ):
