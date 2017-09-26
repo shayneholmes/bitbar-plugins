@@ -38,6 +38,6 @@ def encodePngFromPixels( pixels ):
 data = getNumbersFromFile(getFileName())
 pixels = generateSinglePixelSparklines(data)
 pixels = scalePixels(pixels, barwidth, height / 2)
-print("Test | templateImage=" + encodePngFromPixels(pixels))
+print("| templateImage=" + encodePngFromPixels(pixels))
 print("---")
-print(pixels)
+print(data)
