@@ -41,6 +41,11 @@ def generateSinglePixelSparklines( data ):
 def scalePixels( pixels, x, y ):
     return [[i for i in row for j in range(x)] for row in pixels for j in range(y)]
 
+def addHorizontalLine( pixels, y ):
+    linefunc = lambda pos, target, pixel: pixel + 0.5 if pos == target else pixel
+    pixels = [[linefunc(pos, y, pixel) for pixel in pixels[pos]] for pos in range(len(pixels))]
+    return pixels
+
 def encodePngFromPixels( pixels ):
     lfunc = lambda k: 0
     afunc = lambda k: min(int(255 * k),255)
@@ -61,6 +66,7 @@ data = get_data(getFileName())
 data = get_time_points(data)
 pixels = generateSinglePixelSparklines(data)
 pixels = scalePixels(pixels, 1, height / 2)
+pixels = addHorizontalLine(pixels, height / 2)
 
 print("| templateImage=" + encodePngFromPixels(pixels))
 print("---")
