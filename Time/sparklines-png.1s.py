@@ -2,10 +2,19 @@
 # coding=utf-8
 import base64
 import mmap
+import os
 import png
 
 height=16
 barwidth=6
+
+def getFileName():
+    return os.environ['TMPDIR'] + '/status.tmp'
+
+def getNumbersFromFile( fileName ):
+    with open(fileName) as f:
+        arr = [int(x) for line in f for x in line.split()]
+    return arr
 
 def generateSinglePixelSparklines( data ):
     win = lambda k: 1 if k == 1 else 0
@@ -26,7 +35,7 @@ def encodePngFromPixels( pixels ):
     imgData = base64.b64encode(mm.read(size))
     return imgData
 
-data = [1,-1,1,-1,1,-1,1,1,1,-1]
+data = getNumbersFromFile(getFileName())
 pixels = generateSinglePixelSparklines(data)
 pixels = scalePixels(pixels, barwidth, height / 2)
 print("Test | templateImage=" + encodePngFromPixels(pixels))
