@@ -6,11 +6,6 @@ import os
 import png
 import sys
 
-if len(sys.argv) > 1:
-    if sys.argv[1] == 'reset':
-        os.system('>' + getFileName())
-        sys.exit()
-
 height=16
 barwidth=4
 
@@ -43,15 +38,14 @@ def encodePngFromPixels( pixels ):
     imgData = base64.b64encode(mm.read(size))
     return imgData
 
-def addHorizontalLine( pixels, y ):
-    linefunc = lambda pos, target, pixel: pixel + 0.5 if pos == target else pixel
-    pixels = [[linefunc(pos, y, pixel) for pixel in pixels[pos]] for pos in range(len(pixels))]
-    return pixels
+if len(sys.argv) > 1:
+    if sys.argv[1] == 'reset':
+        os.system('>' + getFileName())
+        sys.exit()
 
 data = getNumbersFromFile(getFileName())
 pixels = generateSinglePixelSparklines(data)
 pixels = scalePixels(pixels, barwidth, height / 2)
-pixels = addHorizontalLine(pixels, height / 2)
 
 print("| templateImage=" + encodePngFromPixels(pixels))
 print("---")
