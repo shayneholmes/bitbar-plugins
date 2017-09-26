@@ -7,21 +7,51 @@ import png
 import sys
 import time
 
-height=12
+height=8
 barwidth=48
 
 statusinfo = {
         0: {
             'name': 'disabled',
             'duration': 0,
+            'sprite': [
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                ]
             },
         1: {
             'name': 'work',
             'duration': 15*60,
+            'sprite': [
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                ]
             },
         2: {
             'name': 'break',
             'duration': 5*60,
+            'sprite': [
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                '101101001',
+                ]
             },
         }
         
@@ -44,6 +74,11 @@ def percentageelapsed():
         return elapsedseconds() / statusinfo[status]['duration']
     except:
         return 0
+
+def getsprite():
+    packed = statusinfo[status]['sprite']
+    pixels = [[int(x) for x in row] for row in packed]
+    return pixels
 
 def clamp( val, low, hi ):
     if val < low:
@@ -97,7 +132,7 @@ if len(sys.argv) > 1:
 starttime, status = loadStateFromFile(getFileName())
 percent = percentageelapsed()
 pixels = generateProgressBar(percent)
-pixels = joinwithpadding(pixels, pixels, 3)
+pixels = joinwithpadding(getsprite(), pixels, 3)
 
 print("| templateImage=" + encodePngFromPixels(pixels))
 print("---")
