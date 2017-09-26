@@ -34,7 +34,7 @@ def scalePixels( pixels, x, y ):
 
 def encodePngFromPixels( pixels ):
     lfunc = lambda k: 0
-    afunc = lambda k: 255 if k > 0 else 0
+    afunc = lambda k: min(int(255 * k),255)
     pixels = [[f(x) for x in row for f in (lfunc, afunc)] for row in pixels]
     mm = mmap.mmap(-1, 10000)
     png.from_array(pixels, 'LA').save(mm)
@@ -43,9 +43,15 @@ def encodePngFromPixels( pixels ):
     imgData = base64.b64encode(mm.read(size))
     return imgData
 
+def addHorizontalLine( pixels, y ):
+    linefunc = lambda pos, target, pixel: pixel + 0.5 if pos == target else pixel
+    pixels = [[linefunc(pos, y, pixel) for pixel in pixels[pos]] for pos in range(len(pixels))]
+    return pixels
+
 data = getNumbersFromFile(getFileName())
 pixels = generateSinglePixelSparklines(data)
 pixels = scalePixels(pixels, barwidth, height / 2)
+pixels = addHorizontalLine(pixels, height / 2)
 
 print("| templateImage=" + encodePngFromPixels(pixels))
 print("---")
