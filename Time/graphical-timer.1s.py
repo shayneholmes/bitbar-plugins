@@ -86,7 +86,7 @@ def percentageelapsed():
 
 def formattime(secs):
     if secs == 0:
-        return " --:--"
+        return ""
     else:
         return "{:d}:{:02d}".format(int(secs / 60), int(secs % 60))
 
@@ -175,11 +175,6 @@ pixels = joinwithpadding(getsprite(), pixels, 3)
 print("| templateImage=" + encodePngFromPixels(pixels))
 print("---")
 print(formattime(remainingseconds()))
-print(status)
-print(starttime)
-print(time.time())
-print(elapsedseconds())
-print(percent)
 print('Work | terminal=false refresh=true ' + bashcommand('work'))
 print('Break | terminal=false refresh=true ' + bashcommand('break'))
 print('Disable | terminal=false refresh=true ' + bashcommand('disable'))
