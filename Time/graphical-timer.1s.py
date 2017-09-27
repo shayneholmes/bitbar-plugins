@@ -144,7 +144,7 @@ def writestatus():
     os.system('echo "{:.0f}|{:d}" > {:s}'.format(time.time(), status, getFileName()))
 
 def complete():
-    os.system('echo "{:d}" > {:s}'.format(time.time(), status, getstatusfile()))
+    os.system('echo "{:d}" >> {:s}'.format(status, getstatusfile()))
     #  osascript -e "display notification \"Finished $(printTimerName)\" with title \"Timer\" sound name \"$(printTimerCompletionSound)\"" &> /dev/null
 
 def setwork():
