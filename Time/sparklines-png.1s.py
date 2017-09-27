@@ -57,19 +57,27 @@ def encodePngFromPixels( pixels ):
     imgData = base64.b64encode(mm.read(size))
     return imgData
 
+def formattime(secs):
+    mins = secs / 60
+    if mins == 0:
+        return ""
+    else:
+        return "{:d}:{:02d}".format(int(mins / 60), int(mins % 60))
+
 if len(sys.argv) > 1:
     if sys.argv[1] == 'reset':
         os.system('>' + getFileName())
         sys.exit()
 
 data = get_data(getFileName())
-data = get_time_points(data)
-pixels = generateSinglePixelSparklines(data)
+time_points = get_time_points(data)
+pixels = generateSinglePixelSparklines(time_points)
 pixels = scalePixels(pixels, 1, height / 2)
 pixels = addHorizontalLine(pixels, height / 2)
 
 print("| templateImage=" + encodePngFromPixels(pixels))
 print("---")
-print(data)
 print('Reset | terminal=false refresh=true bash="' + os.path.abspath(__file__) + '" param1=reset')
 print('Update | refresh=true')
+print("{} transitions over {}".format(len(data), formattime(time.time() - data[0][0])))
+print("{} pixels".format(len(pixels[0])))
