@@ -17,7 +17,7 @@ def get_data( fileName ):
     with open(fileName) as f:
         arr = [[int(x) for x in line.split('|')] for line in f]
     if len(arr) == 0:
-        arr = [[time.time(),0]]
+        arr = [[time.time()-secondsperpixel,0]]
     return arr
 
 def get_time_points( time_points ):
