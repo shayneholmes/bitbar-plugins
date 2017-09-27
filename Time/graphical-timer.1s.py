@@ -140,7 +140,7 @@ def encodePngFromPixels( pixels ):
 def bashcommand( param ):
     return 'bash="' + os.path.abspath(__file__) + '" param1=' + param
 
-def writestatus( status ):
+def writestatus():
     os.system('echo "{:.0f}|{:d}" > {:s}'.format(time.time(), status, getFileName()))
 
 def complete():
@@ -148,13 +148,24 @@ def complete():
     #  osascript -e "display notification \"Finished $(printTimerName)\" with title \"Timer\" sound name \"$(printTimerCompletionSound)\"" &> /dev/null
 
 def setwork():
-    writestatus(1)
+    global status
+    status = 1
+    writestatus()
 
 def setbreak():
-    writestatus(2)
+    global status
+    status = 2
+    writestatus()
 
 def setdisabled():
-    writestatus(0)
+    global status
+    status = 0
+    writestatus()
+
+def checkforcompletion():
+    if status != 0 and remainingseconds() == 0:
+        complete()
+        setdisabled()
 
 commands = {
         'work': setwork,
@@ -169,6 +180,7 @@ if len(sys.argv) > 1:
         sys.exit()
 
 starttime, status = loadStateFromFile(getFileName())
+checkforcompletion()
 percent = percentageelapsed()
 pixels = generateProgressBar(percent)
 pixels = joinwithpadding(getsprite(), pixels, 3)
