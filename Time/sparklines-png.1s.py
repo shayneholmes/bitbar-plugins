@@ -11,7 +11,7 @@ height=16
 secondsperpixel=60
 width=180
 # workday length
-lookback=8*60*60
+lookback=width*secondsperpixel
 
 def getFileName():
     return os.environ['TMPDIR'] + '/status.tmp'
@@ -24,8 +24,9 @@ def get_data( fileName ):
 
 def get_time_points( time_points ):
     # poll over time, starting with the first data point
-    earliesttime = time.time() - lookback
-    timerange = time.time() - earliesttime
+    inttime = int(time.time())
+    earliesttime = inttime - lookback - (inttime % secondsperpixel)
+    timerange = lookback
     point = 0
     maxtimepoint = len(time_points)
     data = []
