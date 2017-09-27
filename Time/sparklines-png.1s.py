@@ -42,7 +42,7 @@ def scalePixels( pixels, x, y ):
     return [[i for i in row for j in range(x)] for row in pixels for j in range(y)]
 
 def addHorizontalLine( pixels, y ):
-    linefunc = lambda pos, target, pixel: pixel + 0.5 if pos == target else pixel
+    linefunc = lambda pos, target, pixel: pixel + 1 if pos == target else pixel
     pixels = [[linefunc(pos, y, pixel) for pixel in pixels[pos]] for pos in range(len(pixels))]
     return pixels
 
