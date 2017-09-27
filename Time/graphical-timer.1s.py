@@ -76,7 +76,7 @@ def totalseconds():
     return statusinfo[status]['duration']
 
 def remainingseconds():
-    return totalseconds() - elapsedseconds()
+    return max(0, totalseconds() - elapsedseconds())
 
 def percentageelapsed():
     try:
@@ -85,7 +85,10 @@ def percentageelapsed():
         return 0
 
 def formattime(secs):
-    return "{:.0f}:{:02.0f}".format(secs / 60, secs % 60)
+    if secs == 0:
+        return " --:--"
+    else:
+        return "{:.0f}:{:02.0f}".format(secs / 60, secs % 60)
 
 def getsprite():
     packed = statusinfo[status]['sprite']
