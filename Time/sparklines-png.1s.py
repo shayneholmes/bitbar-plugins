@@ -21,12 +21,6 @@ def get_data( fileName ):
         arr = [[time.time()-secondsperpixel,0]]
     return arr
 
-def frange(start, stop, step):
-    x = start
-    while x < stop:
-        yield x
-        x += step
-
 def get_time_points( time_points ):
     # poll over time, starting with the first data point
     earliesttime = time_points[0][0]
@@ -34,11 +28,14 @@ def get_time_points( time_points ):
     point = 0
     maxtimepoint = len(time_points)
     data = []
-    for slice_time in frange(earliesttime, time.time(), float(timerange) / width):
+    time_step = float(timerange) / width
+    slice_time = earliesttime
+    for i in range(width):
         # fast forward through time_points to the desired time
         while point < maxtimepoint and time_points[point][0] <= slice_time:
             point += 1
         data.append(time_points[point - 1][1])
+        slice_time += time_step
     return data
 
 def generateSinglePixelSparklines( data ):
