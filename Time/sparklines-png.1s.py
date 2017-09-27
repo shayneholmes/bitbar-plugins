@@ -28,9 +28,9 @@ def get_time_points( time_points ):
     data = []
     for slice_time in xrange(int(earliesttime), int(time.time()), secondsperpixel):
         # fast forward through time_points to the desired time
-        while point < maxtimepoint - 1 and time_points[point][0] < slice_time:
+        while point < maxtimepoint and time_points[point][0] < slice_time:
             point += 1
-        data.append(time_points[point][1])
+        data.append(time_points[point - 1][1])
     return data
 
 def generateSinglePixelSparklines( data ):
