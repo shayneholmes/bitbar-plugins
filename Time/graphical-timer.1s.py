@@ -85,7 +85,7 @@ def percentageelapsed():
         return 0
 
 def formattime(secs):
-    return "{:.0f}:{:.0f}".format(secs / 60, secs % 60)
+    return "{:.0f}:{:02.0f}".format(secs / 60, secs % 60)
 
 def getsprite():
     packed = statusinfo[status]['sprite']
