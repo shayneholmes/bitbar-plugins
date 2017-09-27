@@ -151,31 +151,36 @@ def encodePngFromPixels( pixels ):
 def bashcommand( param ):
     return 'bash="' + os.path.abspath(__file__) + '" param1=' + param
 
-def writestatus():
+def record_active_timer():
     os.system('echo "{:.0f}|{:d}" > {:s}'.format(time.time(), status, getFileName()))
     os.system('echo "{:.0f}|{:d}" >> {:s}'.format(time.time(), status, getstatusfile()))
 
+def record_completion():
+    # Write the disabled event at the end of the time, even if it happened while we weren't running
+    os.system('echo "{:.0f}|{:d}" >> {:s}'.format(starttime + totalseconds(), 0, getstatusfile()))
+
 def complete():
+    record_completion()
     return
     #  osascript -e "display notification \"Finished $(printTimerName)\" with title \"Timer\" sound name \"$(printTimerCompletionSound)\"" &> /dev/null
 
 def setwork():
     global status
     status = 1
-    writestatus()
+    record_active_timer()
 
 def setbreak():
     global status
     status = 2
-    writestatus()
+    record_active_timer()
 
 def setdisabled():
     global status
     status = 0
-    writestatus()
+    record_active_timer()
 
 def checkforcompletion():
-    if status != 0 and remainingseconds() == 0:
+    if status != 0 and remainingseconds() <= 0:
         complete()
         setdisabled()
 
