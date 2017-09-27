@@ -108,7 +108,10 @@ def getsprite():
 def generateProgressBar( percentage ):
     filledpixels = percentage * barwidth
     pixels = [[1 if filledpixels - i > 0 else 0 for i in range(barwidth)] for i in range(height)]
-    pixels = fillborders(pixels)
+    if status == 0:
+        pixels = addHorizontalLine(pixels, height / 2)
+    else:
+        pixels = fillborders(pixels)
     return pixels
 
 def joinwithpadding( leftpixels, rightpixels, padding):
@@ -120,6 +123,11 @@ def joinwithpadding( leftpixels, rightpixels, padding):
         row += [0 for i in range(padding)]
         row += rightpixels[y]
         pixels.append(row)
+    return pixels
+
+def addHorizontalLine( pixels, y ):
+    linefunc = lambda pos, target, pixel: pixel + 1 if pos == target else pixel
+    pixels = [[linefunc(pos, y, pixel) for pixel in pixels[pos]] for pos in range(len(pixels))]
     return pixels
 
 def fillborders( pixels ):
