@@ -153,10 +153,12 @@ def bashcommand( param ):
 
 def record_active_timer():
     os.system('echo "{:.0f}|{:d}" > {:s}'.format(time.time(), status, getFileName()))
+
+def record_new_timer():
     os.system('echo "{:.0f}|{:d}" >> {:s}'.format(time.time(), status, getstatusfile()))
 
 def record_completion():
-    # Write the disabled event at the end of the time, even if it happened while we weren't running
+    # Write the disabled event at the end of the completed timer, even if it happened while we weren't running
     os.system('echo "{:.0f}|{:d}" >> {:s}'.format(starttime + totalseconds(), 0, getstatusfile()))
 
 def complete():
@@ -164,25 +166,27 @@ def complete():
     return
     #  osascript -e "display notification \"Finished $(printTimerName)\" with title \"Timer\" sound name \"$(printTimerCompletionSound)\"" &> /dev/null
 
-def setwork():
+def settimer( newstatus ):
     global status
-    status = 1
+    status = newstatus
     record_active_timer()
+
+def setwork():
+    settimer(1)
+    record_new_timer()
 
 def setbreak():
-    global status
-    status = 2
-    record_active_timer()
+    settimer(2)
+    record_new_timer()
 
 def setdisabled():
-    global status
-    status = 0
-    record_active_timer()
+    settimer(0)
+    record_new_timer()
 
 def checkforcompletion():
     if status != 0 and remainingseconds() <= 0:
         complete()
-        setdisabled()
+        settimer(0)
 
 commands = {
         'work': setwork,
