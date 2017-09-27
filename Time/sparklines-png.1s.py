@@ -17,7 +17,7 @@ def getFileName():
     return os.environ['TMPDIR'] + '/status.tmp'
 
 def get_data( fileName ):
-    arr = [[time.time()-lookback,0]]
+    arr = [[time.time()-lookback*2,0]]
     with open(fileName) as f:
         arr += [[int(x) for x in line.split('|')] for line in f]
     return arr
