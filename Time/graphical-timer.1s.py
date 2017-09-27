@@ -105,16 +105,9 @@ def getsprite():
     pixels = [[int(x) for x in row] for row in packed]
     return pixels
 
-def clamp( val, low, hi ):
-    if val < low:
-        return low
-    if val > hi:
-        return hi
-    return val
-
 def generateProgressBar( percentage ):
     filledpixels = percentage * barwidth
-    pixels = [[clamp(filledpixels - i,0,1) for i in range(barwidth)] for i in range(height)]
+    pixels = [[1 if filledpixels - i > 0 else 0 for i in range(barwidth)] for i in range(height)]
     pixels = fillborders(pixels)
     return pixels
 
