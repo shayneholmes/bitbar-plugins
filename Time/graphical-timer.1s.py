@@ -69,11 +69,20 @@ def loadStateFromFile( fileName ):
 def elapsedseconds():
     return time.time() - starttime
 
+def totalseconds():
+    return statusinfo[status]['duration']
+
+def remainingseconds():
+    return totalseconds() - elapsedseconds()
+
 def percentageelapsed():
     try:
-        return elapsedseconds() / statusinfo[status]['duration']
+        return elapsedseconds() / totalseconds()
     except:
         return 0
+
+def formattime(secs):
+    return "{:.0f}:{:.0f}".format(secs / 60, secs % 60)
 
 def getsprite():
     packed = statusinfo[status]['sprite']
@@ -136,6 +145,7 @@ pixels = joinwithpadding(getsprite(), pixels, 3)
 
 print("| templateImage=" + encodePngFromPixels(pixels))
 print("---")
+print(formattime(remainingseconds()))
 print(status)
 print(starttime)
 print(time.time())
