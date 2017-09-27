@@ -10,6 +10,8 @@ import time
 height=16
 barwidth=48
 
+durationmultiplier=60
+
 statusinfo = {
         0: {
             'name': 'disabled',
@@ -30,7 +32,7 @@ statusinfo = {
             },
         1: {
             'name': 'work',
-            'duration': 15*60,
+            'duration': 15*durationmultiplier,
             'sprite': [
                 '011111110',
                 '100000001',
@@ -46,7 +48,7 @@ statusinfo = {
             },
         2: {
             'name': 'break',
-            'duration': 5*60,
+            'duration': 5*durationmultiplier,
             'sprite': [
                 '000000000',
                 '011111100',
