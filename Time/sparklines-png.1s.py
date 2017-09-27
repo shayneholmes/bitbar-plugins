@@ -8,7 +8,7 @@ import sys
 import time
 
 height=16
-secondsperpixel=1
+secondsperpixel=60
 
 def getFileName():
     return os.environ['TMPDIR'] + '/status.tmp'
