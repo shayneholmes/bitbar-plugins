@@ -150,9 +150,10 @@ def bashcommand( param ):
 
 def writestatus():
     os.system('echo "{:.0f}|{:d}" > {:s}'.format(time.time(), status, getFileName()))
+    os.system('echo "{:.0f}|{:d}" >> {:s}'.format(time.time(), status, getstatusfile()))
 
 def complete():
-    os.system('echo "{:d}" >> {:s}'.format(status, getstatusfile()))
+    return
     #  osascript -e "display notification \"Finished $(printTimerName)\" with title \"Timer\" sound name \"$(printTimerCompletionSound)\"" &> /dev/null
 
 def setwork():

@@ -5,19 +5,33 @@ import mmap
 import os
 import png
 import sys
+import time
 
 height=16
-barwidth=4
+secondsperpixel=1
 
 def getFileName():
     return os.environ['TMPDIR'] + '/status.tmp'
 
-def getNumbersFromFile( fileName ):
+def get_data( fileName ):
     with open(fileName) as f:
-        arr = [int(x) for line in f for x in line.split()]
+        arr = [[int(x) for x in line.split('|')] for line in f]
     if len(arr) == 0:
-        arr = [0]
+        arr = [[time.time(),0]]
     return arr
+
+def get_time_points( time_points ):
+    # poll over time, starting with the first data point
+    earliesttime = time_points[0][0]
+    point = 0
+    maxtimepoint = len(time_points)
+    data = []
+    for slice_time in xrange(int(earliesttime), int(time.time()), secondsperpixel):
+        # fast forward through time_points to the desired time
+        while point < maxtimepoint - 1 and time_points[point][0] < slice_time:
+            point += 1
+        data.append(time_points[point][1])
+    return data
 
 def generateSinglePixelSparklines( data ):
     win = lambda k: 1 if k == 1 else 0
@@ -43,9 +57,10 @@ if len(sys.argv) > 1:
         os.system('>' + getFileName())
         sys.exit()
 
-data = getNumbersFromFile(getFileName())
+data = get_data(getFileName())
+data = get_time_points(data)
 pixels = generateSinglePixelSparklines(data)
-pixels = scalePixels(pixels, barwidth, height / 2)
+pixels = scalePixels(pixels, 1, height / 2)
 
 print("| templateImage=" + encodePngFromPixels(pixels))
 print("---")
