@@ -58,6 +58,9 @@ statusinfo = {
 def getFileName():
     return os.environ['TMPDIR'] + '/simple-timer'
 
+def getstatusfile():
+    return os.environ['TMPDIR'] + '/status.tmp'
+
 def loadStateFromFile( fileName ):
     try:
         with open(fileName) as f:
@@ -133,9 +136,32 @@ def encodePngFromPixels( pixels ):
 def bashcommand( param ):
     return 'bash="' + os.path.abspath(__file__) + '" param1=' + param
 
+def writestatus( status ):
+    os.system('echo "{:.0f}|{:d}" > {:s}'.format(time.time(), status, getFileName()))
+
+def complete():
+    os.system('echo "{:d}" > {:s}'.format(time.time(), status, getstatusfile()))
+    #  osascript -e "display notification \"Finished $(printTimerName)\" with title \"Timer\" sound name \"$(printTimerCompletionSound)\"" &> /dev/null
+
+def setwork():
+    writestatus(1)
+
+def setbreak():
+    writestatus(2)
+
+def setdisabled():
+    writestatus(0)
+
+commands = {
+        'work': setwork,
+        'break': setbreak,
+        'disable': setdisabled,
+        }
+
 if len(sys.argv) > 1:
-    if sys.argv[1] == 'reset':
-        os.system('>' + getFileName())
+    # commands
+    if commands[sys.argv[1]]:
+        commands[sys.argv[1]]()
         sys.exit()
 
 starttime, status = loadStateFromFile(getFileName())
@@ -153,3 +179,4 @@ print(elapsedseconds())
 print(percent)
 print('Work | terminal=false refresh=true ' + bashcommand('work'))
 print('Break | terminal=false refresh=true ' + bashcommand('break'))
+print('Disable | terminal=false refresh=true ' + bashcommand('disable'))
