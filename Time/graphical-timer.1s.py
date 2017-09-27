@@ -104,13 +104,14 @@ def clamp( val, low, hi ):
 
 def generateProgressBar( percentage ):
     filledpixels = percentage * barwidth
-    pixels = [[clamp(filledpixels - i,0,1) for i in range(barwidth)] for i in range(16)]
+    pixels = [[clamp(filledpixels - i,0,1) for i in range(barwidth)] for i in range(height)]
     pixels = fillborders(pixels)
     return pixels
 
 def joinwithpadding( leftpixels, rightpixels, padding):
     pixels = []
-    for y in range(len(leftpixels)):
+    rows = min(len(leftpixels),len(rightpixels))
+    for y in range(rows):
         row = []
         row += leftpixels[y]
         row += [0 for i in range(padding)]
