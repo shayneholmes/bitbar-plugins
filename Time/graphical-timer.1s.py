@@ -7,7 +7,7 @@ import png
 import sys
 import time
 
-height=16
+height=10
 barwidth=48
 
 durationmultiplier=60
