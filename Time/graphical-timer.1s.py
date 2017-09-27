@@ -88,7 +88,7 @@ def formattime(secs):
     if secs == 0:
         return " --:--"
     else:
-        return "{:.0f}:{:02.0f}".format(secs / 60, secs % 60)
+        return "{:d}:{:02d}".format(int(secs / 60), int(secs % 60))
 
 def getsprite():
     packed = statusinfo[status]['sprite']
