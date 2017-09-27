@@ -9,6 +9,7 @@ import time
 
 height=16
 secondsperpixel=60
+width=180
 
 def getFileName():
     return os.environ['TMPDIR'] + '/status.tmp'
@@ -20,13 +21,20 @@ def get_data( fileName ):
         arr = [[time.time()-secondsperpixel,0]]
     return arr
 
+def frange(start, stop, step):
+    x = start
+    while x < stop:
+        yield x
+        x += step
+
 def get_time_points( time_points ):
     # poll over time, starting with the first data point
     earliesttime = time_points[0][0]
+    timerange = time.time() - earliesttime
     point = 0
     maxtimepoint = len(time_points)
     data = []
-    for slice_time in xrange(int(earliesttime), int(time.time()), secondsperpixel):
+    for slice_time in frange(earliesttime, time.time(), float(timerange) / width):
         # fast forward through time_points to the desired time
         while point < maxtimepoint and time_points[point][0] <= slice_time:
             point += 1
