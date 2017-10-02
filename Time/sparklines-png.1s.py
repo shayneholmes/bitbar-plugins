@@ -8,7 +8,7 @@ import sys
 import time
 
 height=16
-secondsperpixel=60
+secondsperpixel=120
 width=180
 # workday length
 lookback=width*secondsperpixel
