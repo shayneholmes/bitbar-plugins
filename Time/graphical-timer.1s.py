@@ -33,6 +33,7 @@ statusinfo = {
         1: {
             'name': 'work',
             'duration': 15*durationmultiplier,
+            'completionsound': 'glass',
             'sprite': [
                 '011111110',
                 '100000001',
@@ -49,6 +50,7 @@ statusinfo = {
         2: {
             'name': 'break',
             'duration': 5*durationmultiplier,
+            'completionsound': 'glass',
             'sprite': [
                 '000000000',
                 '011111100',
@@ -65,6 +67,9 @@ statusinfo = {
             },
         }
         
+def getfield( field ):
+    return statusinfo[status][field]
+
 def getFileName():
     return os.environ['TMPDIR'] + '/simple-timer'
 
@@ -83,7 +88,7 @@ def elapsedseconds():
     return time.time() - starttime
 
 def totalseconds():
-    return statusinfo[status]['duration']
+    return getfield('duration')
 
 def remainingseconds():
     return max(0, totalseconds() - elapsedseconds())
@@ -101,7 +106,7 @@ def formattime(secs):
         return "{:d}:{:02d}".format(int(secs / 60), int(secs % 60))
 
 def getsprite():
-    packed = statusinfo[status]['sprite']
+    packed = getfield('sprite')
     pixels = [[int(x) for x in row] for row in packed]
     return pixels
 
@@ -163,8 +168,9 @@ def record_completion():
 
 def complete():
     record_completion()
-    return
-    #  osascript -e "display notification \"Finished $(printTimerName)\" with title \"Timer\" sound name \"$(printTimerCompletionSound)\"" &> /dev/null
+    command = 'osascript -e "display notification \\"Finished {}\\" with title \\"{}\\" sound name \\"{}\\"" &> /dev/null'.format(
+        getfield('name'), getfield('name'), getfield('completionsound'))
+    os.system(command)
 
 def settimer( newstatus ):
     global status
