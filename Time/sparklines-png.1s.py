@@ -9,7 +9,7 @@ import time
 
 height=16
 secondsperpixel=120
-width=180
+width=270
 # workday length
 lookback=width*secondsperpixel
 
