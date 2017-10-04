@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 import base64
+from datetime import datetime
 import mmap
 import os
 import png
@@ -12,12 +13,18 @@ secondsperpixel=120
 width=270
 # workday length
 lookback=width*secondsperpixel
+# one day in seconds
+day_offset=86400
 
 def getFileName():
     return os.environ['TMPDIR'] + '/status.tmp'
 
 def current_time():
     return time.mktime(time.localtime())
+
+def today_start():
+    now = datetime.now().replace(hour=6, minute=30, second=0, microsecond=0)
+    return time.mktime(now.timetuple())
 
 def get_data( fileName ):
     arr = [[current_time()-lookback*2,0]]
@@ -28,7 +35,7 @@ def get_data( fileName ):
 def get_time_points( time_points ):
     # poll over time, starting with the first data point
     inttime = int(current_time())
-    earliesttime = inttime - lookback - (inttime % secondsperpixel)
+    earliesttime = today_start()
     timerange = lookback
     point = 0
     maxtimepoint = len(time_points)
@@ -41,6 +48,9 @@ def get_time_points( time_points ):
             point += 1
         data.append(time_points[point - 1][1])
         slice_time += time_step
+        if slice_time > inttime:
+            slice_time -= day_offset
+            point = 0
     return data
 
 def generateSinglePixelSparklines( data ):
