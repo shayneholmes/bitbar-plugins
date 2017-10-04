@@ -64,9 +64,8 @@ def scalePixels( pixels, x, y ):
     return [[i for i in row for j in range(x)] for row in pixels for j in range(y)]
 
 def addHorizontalLine( pixels, y ):
-    linefunc = lambda pos, target, pixel: pixel + 1 if pos == target else pixel
-    pixels = [[linefunc(pos, y, pixel) for pixel in pixels[pos]] for pos in range(len(pixels))]
-    return pixels
+    for i in range(0, len(pixels[0])):
+        pixels[y][i] += + 1
 
 def blank_vertical( pixels, x, width ):
     for i in range(0, len(pixels)):
@@ -100,7 +99,7 @@ data = get_data(getFileName())
 time_points = get_time_points(data)
 pixels = generateSinglePixelSparklines(time_points)
 pixels = scalePixels(pixels, 1, height / 2)
-pixels = addHorizontalLine(pixels, height / 2)
+addHorizontalLine(pixels, height / 2)
 blank_vertical(pixels, int(current_time() - today_start()) / secondsperpixel + 1, blankspace)
 
 print("| templateImage=" + encodePngFromPixels(pixels))
