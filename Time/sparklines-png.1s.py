@@ -77,7 +77,8 @@ def encodePngFromPixels( pixels ):
     lfunc = lambda k: 0
     afunc = lambda k: min(int(255 * k),255)
     pixels = [[f(x) for x in row for f in (lfunc, afunc)] for row in pixels]
-    mm = mmap.mmap(-1, 10000)
+    maxpngsize = 10000
+    mm = mmap.mmap(-1, maxpngsize)
     png.from_array(pixels, 'LA').save(mm)
     size = mm.tell() + 1
     mm.seek(0)
