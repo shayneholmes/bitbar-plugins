@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 import base64
+import itertools
 import mmap
 import os
 import png
@@ -129,20 +130,14 @@ def expandtosize( pixels, w, h ):
     paddingleft = (neww - currentw) / 2
     paddingright = (neww - currentw - paddingleft)
     paddedpixels = []
-    # top padding
-    for i in range(paddingtop):
-        paddedpixels.append([0 for j in range(neww)])
+    paddedpixels += itertools.repeat(itertools.repeat(0,neww), paddingtop)
     for i in range(currenth):
         row = []
-        # left padding
-        row += [0 for j in range(paddingleft)]
+        row += itertools.repeat(0, paddingleft)
         row += pixels[i]
-        # right padding
-        row += [0 for j in range(paddingright)]
+        row += itertools.repeat(0, paddingright)
         paddedpixels.append(row)
-    # bottom padding
-    for i in range(paddingbottom):
-        paddedpixels.append([0 for j in range(neww)])
+    paddedpixels += itertools.repeat(itertools.repeat(0,neww), paddingbottom)
     return paddedpixels
 
 def joinwithpadding( leftpixels, rightpixels, padding):
