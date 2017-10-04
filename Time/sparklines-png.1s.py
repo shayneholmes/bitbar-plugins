@@ -16,15 +16,18 @@ lookback=width*secondsperpixel
 def getFileName():
     return os.environ['TMPDIR'] + '/status.tmp'
 
+def current_time():
+    return time.mktime(time.localtime())
+
 def get_data( fileName ):
-    arr = [[time.time()-lookback*2,0]]
+    arr = [[current_time()-lookback*2,0]]
     with open(fileName) as f:
         arr += [[int(x) for x in line.split('|')] for line in f]
     return arr
 
 def get_time_points( time_points ):
     # poll over time, starting with the first data point
-    inttime = int(time.time())
+    inttime = int(current_time())
     earliesttime = inttime - lookback - (inttime % secondsperpixel)
     timerange = lookback
     point = 0
