@@ -119,9 +119,37 @@ def generateProgressBar( percentage ):
         pixels = fillborders(pixels)
     return pixels
 
+def expandtosize( pixels, w, h ):
+    currenth = len(pixels)
+    currentw = len(pixels[0])
+    newh = max(h, currenth)
+    neww = max(w, currentw)
+    paddingtop = (newh - currenth) / 2
+    paddingbottom = (newh - currenth - paddingtop)
+    paddingleft = (neww - currentw) / 2
+    paddingright = (neww - currentw - paddingleft)
+    paddedpixels = []
+    # top padding
+    for i in range(paddingtop):
+        paddedpixels.append([0 for j in range(neww)])
+    for i in range(currenth):
+        row = []
+        # left padding
+        row += [0 for j in range(paddingleft)]
+        row += pixels[i]
+        # right padding
+        row += [0 for j in range(paddingright)]
+        paddedpixels.append(row)
+    # bottom padding
+    for i in range(paddingbottom):
+        paddedpixels.append([0 for j in range(neww)])
+    return paddedpixels
+
 def joinwithpadding( leftpixels, rightpixels, padding):
     pixels = []
-    rows = min(len(leftpixels),len(rightpixels))
+    rows = max(len(leftpixels),len(rightpixels))
+    leftpixels = expandtosize(leftpixels, 0, rows)
+    rightpixels = expandtosize(rightpixels, 0, rows)
     for y in range(rows):
         row = []
         row += leftpixels[y]
