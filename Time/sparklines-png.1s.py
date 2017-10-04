@@ -70,7 +70,7 @@ def addHorizontalLine( pixels, y ):
 def blank_vertical( pixels, x, width ):
     xmax = len(pixels[0])
     for i in range(0, len(pixels)):
-        for j in range(x, min(xmax,x+width)):
+        for j in range(max(x,0), min(xmax,x+width)):
             pixels[i][j] = 0
 
 def encodePngFromPixels( pixels ):
