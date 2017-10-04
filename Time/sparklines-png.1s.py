@@ -9,12 +9,12 @@ import sys
 import time
 
 height=16
-secondsperpixel=120
+secondsperpixel=1
 width=270
 # workday length
 lookback=width*secondsperpixel
 # one day in seconds
-day_offset=86400
+day_offset=lookback
 # blank space after now, in pixels
 blankspace=5
 
@@ -22,11 +22,10 @@ def getFileName():
     return os.environ['HOME'] + '/.timer-results'
 
 def current_time():
-    return time.mktime(time.localtime())
+    return time.time()
 
 def today_start():
-    now = datetime.now().replace(hour=6, minute=30, second=0, microsecond=0)
-    return time.mktime(now.timetuple())
+    return int(time.mktime(time.localtime())) / lookback * lookback
 
 def get_data( fileName ):
     arr = [[current_time()-lookback*2,0]]
@@ -107,5 +106,8 @@ print("| templateImage=" + encodePngFromPixels(pixels))
 print("---")
 print('Reset | terminal=false refresh=true bash="' + os.path.abspath(__file__) + '" param1=reset')
 print('Update | refresh=true')
+print('{} - first'.format(data[0][0]))
+print('{} - current'.format(current_time()))
+print('{} - today'.format(today_start()))
 print("{} transitions over {}".format(len(data), formattime(lookback)))
 print("{} pixels".format(len(pixels[0])))
