@@ -15,6 +15,8 @@ width=270
 lookback=width*secondsperpixel
 # one day in seconds
 day_offset=86400
+# blank space after now, in pixels
+blankspace=5
 
 def getFileName():
     return os.environ['HOME'] + '/.timer-results'
@@ -66,6 +68,11 @@ def addHorizontalLine( pixels, y ):
     pixels = [[linefunc(pos, y, pixel) for pixel in pixels[pos]] for pos in range(len(pixels))]
     return pixels
 
+def blank_vertical( pixels, x, width ):
+    for i in range(0, len(pixels)):
+        for j in range(x, x+width):
+            pixels[i][j] = 0
+
 def encodePngFromPixels( pixels ):
     lfunc = lambda k: 0
     afunc = lambda k: min(int(255 * k),255)
@@ -94,6 +101,7 @@ time_points = get_time_points(data)
 pixels = generateSinglePixelSparklines(time_points)
 pixels = scalePixels(pixels, 1, height / 2)
 pixels = addHorizontalLine(pixels, height / 2)
+blank_vertical(pixels, int(current_time() - today_start()) / secondsperpixel + 1, blankspace)
 
 print("| templateImage=" + encodePngFromPixels(pixels))
 print("---")
