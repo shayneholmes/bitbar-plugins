@@ -17,7 +17,7 @@ lookback=width*secondsperpixel
 day_offset=86400
 
 def getFileName():
-    return os.environ['TMPDIR'] + '/status.tmp'
+    return os.environ['HOME'] + '/.timer-results'
 
 def current_time():
     return time.mktime(time.localtime())

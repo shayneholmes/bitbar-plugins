@@ -71,10 +71,10 @@ def getfield( field ):
     return statusinfo[status][field]
 
 def getFileName():
-    return os.environ['TMPDIR'] + '/simple-timer'
+    return os.environ['HOME'] + '/.simple-timer'
 
 def getstatusfile():
-    return os.environ['TMPDIR'] + '/status.tmp'
+    return os.environ['HOME'] + '/.timer-results'
 
 def loadStateFromFile( fileName ):
     try:
