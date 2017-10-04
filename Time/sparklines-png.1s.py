@@ -46,7 +46,7 @@ def get_time_points( time_points ):
         # fast forward through time_points to the desired time
         while point < maxtimepoint and time_points[point][0] <= slice_time:
             point += 1
-        data.append(time_points[point - 1][1])
+        data.append(time_points[0 if point <= 0 else point - 1][1])
         slice_time += time_step
         if slice_time > inttime:
             slice_time -= day_offset
