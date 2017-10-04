@@ -29,7 +29,7 @@ def today_start():
     return time.mktime(now.timetuple())
 
 def get_data( fileName ):
-    arr = [[current_time()-lookback*2,0]]
+    arr = [[0,0]]
     with open(fileName) as f:
         arr += [[int(x) for x in line.split('|')] for line in f]
     return arr
