@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 import base64
+from datetime import datetime
 import itertools
 import mmap
 import os
@@ -68,8 +69,10 @@ statusinfo = {
             },
         }
         
-def getfield( field ):
-    return statusinfo[status][field]
+def getfield( field, which=-1 ):
+    if which == -1:
+        which = status
+    return statusinfo[which][field]
 
 def getFileName():
     return os.environ['HOME'] + '/.simple-timer'
@@ -80,7 +83,7 @@ def getstatusfile():
 def loadStateFromFile( fileName ):
     try:
         with open(fileName) as f:
-            arr = [int(x) for line in f for x in line.split('|')]
+            arr = [int(x) for line in f for x in line.split('|')[0:2]]
     except:
         arr = [time.time(), 0]
     return arr
@@ -179,8 +182,14 @@ def encodePngFromPixels( pixels ):
 def bashcommand( param ):
     return 'bash="' + os.path.abspath(__file__) + '" param1=' + param
 
-def write_status( time, status, filename ):
-    os.system('echo "{:.0f}|{:d}" > {:s}'.format(time, status, getFileName()))
+def write_status( timestamp, status, filename ):
+    os.system('echo "{:.0f}|{:d}| {:s} - {:s}" > {:s}'
+            .format(
+                timestamp,
+                status,
+                datetime.fromtimestamp(time.time()).isoformat(),
+                getfield('name', status),
+                getFileName()))
 
 def record_active_timer():
     write_status(time.time(), status, getFileName())
