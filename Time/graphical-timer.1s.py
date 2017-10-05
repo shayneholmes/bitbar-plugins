@@ -85,6 +85,8 @@ def loadStateFromFile( fileName ):
         with open(fileName) as f:
             arr = [int(x) for line in f for x in line.split('|')[0:2]][0:2]
     except:
+        arr = []
+    if len(arr) == 0:
         arr = [time.time(), 0]
     return arr
 
