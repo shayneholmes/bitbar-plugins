@@ -8,7 +8,7 @@ import png
 import sys
 import time
 
-height=16
+height=10
 secondsperpixel=120
 width=270
 # workday length
