@@ -179,15 +179,18 @@ def encodePngFromPixels( pixels ):
 def bashcommand( param ):
     return 'bash="' + os.path.abspath(__file__) + '" param1=' + param
 
+def write_status( time, status, filename ):
+    os.system('echo "{:.0f}|{:d}" > {:s}'.format(time, status, getFileName()))
+
 def record_active_timer():
-    os.system('echo "{:.0f}|{:d}" > {:s}'.format(time.time(), status, getFileName()))
+    write_status(time.time(), status, getFileName())
 
 def record_new_timer():
-    os.system('echo "{:.0f}|{:d}" >> {:s}'.format(time.time(), status, getstatusfile()))
+    write_status(time.time(), status, getstatusfile())
 
 def record_completion():
     # Write the disabled event at the end of the completed timer, even if it happened while we weren't running
-    os.system('echo "{:.0f}|{:d}" >> {:s}'.format(starttime + totalseconds(), 0, getstatusfile()))
+    write_status(starttime + totalseconds(), 0, getstatusfile())
 
 def complete():
     record_completion()
