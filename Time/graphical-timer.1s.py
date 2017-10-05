@@ -83,7 +83,7 @@ def getstatusfile():
 def loadStateFromFile( fileName ):
     try:
         with open(fileName) as f:
-            arr = [int(x) for line in f for x in line.split('|')[0:2]]
+            arr = [int(x) for line in f for x in line.split('|')[0:2]][0:2]
     except:
         arr = [time.time(), 0]
     return arr
@@ -182,24 +182,31 @@ def encodePngFromPixels( pixels ):
 def bashcommand( param ):
     return 'bash="' + os.path.abspath(__file__) + '" param1=' + param
 
-def write_status( timestamp, status, filename ):
-    os.system('echo "{:.0f}|{:d}| {:s} - {:s}" > {:s}'
+def write_status( timestamp, status ):
+    os.system('echo "{:.0f}|{:d}" > {:s}'
+            .format(
+                timestamp,
+                status,
+                getFileName()))
+
+def write_result( timestamp, status ):
+    os.system('echo "{:.0f}|{:d}| {:s} - {:s}" >> {:s}'
             .format(
                 timestamp,
                 status,
                 datetime.fromtimestamp(time.time()).isoformat(),
                 getfield('name', status),
-                getFileName()))
+                getstatusfile()))
 
 def record_active_timer():
-    write_status(time.time(), status, getFileName())
+    write_status(time.time(), status)
 
 def record_new_timer():
-    write_status(time.time(), status, getstatusfile())
+    write_result(time.time(), status)
 
 def record_completion():
     # Write the disabled event at the end of the completed timer, even if it happened while we weren't running
-    write_status(starttime + totalseconds(), 0, getstatusfile())
+    write_result(starttime + totalseconds(), 0)
 
 def complete():
     record_completion()

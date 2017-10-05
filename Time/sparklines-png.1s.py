@@ -31,7 +31,7 @@ def today_start():
 def get_data( fileName ):
     arr = [[0,0]]
     with open(fileName) as f:
-        arr += [[int(x) for x in line.split('|')] for line in f]
+        arr += [[int(x) for x in line.split('|')[0:2]] for line in f]
     return arr
 
 def get_time_points( time_points ):
