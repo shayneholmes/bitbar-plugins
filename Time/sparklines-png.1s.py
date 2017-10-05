@@ -97,11 +97,6 @@ def formattime(secs):
     else:
         return "{:d}:{:02d}".format(int(mins / 60), int(mins % 60))
 
-if len(sys.argv) > 1:
-    if sys.argv[1] == 'reset':
-        os.system('>' + getFileName())
-        sys.exit()
-
 data = get_data(getFileName())
 time_points = get_time_points(data)
 pixels = generateSinglePixelSparklines(time_points)
@@ -111,7 +106,6 @@ blank_vertical(pixels, int(current_time() - today_start()) / secondsperpixel + 1
 
 print("| templateImage=" + encodePngFromPixels(pixels))
 print("---")
-print('Reset | terminal=false refresh=true bash="' + os.path.abspath(__file__) + '" param1=reset')
 print('Update | refresh=true')
 print("{} transitions over {}".format(len(data), formattime(lookback)))
 print("{} pixels".format(len(pixels[0])))
