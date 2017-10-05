@@ -2,13 +2,14 @@
 # coding=utf-8
 import base64
 from datetime import datetime
+import itertools
 import mmap
 import os
 import png
 import sys
 import time
 
-height=10
+height=9
 secondsperpixel=120
 width=270
 # workday length
@@ -63,9 +64,13 @@ def generateSinglePixelSparklines( data ):
 def scalePixels( pixels, x, y ):
     return [[i for i in row for j in range(x)] for row in pixels for j in range(y)]
 
-def addHorizontalLine( pixels, y ):
-    for i in range(0, len(pixels[0])):
-        pixels[y][i] += + 1
+def drawcenterline( pixels, height ):
+    if height % 2 == 0:
+        for i in range(0, len(pixels[0])):
+            pixels[y][i] += + 1
+    else:
+        pixels.insert(height / 2, list(itertools.repeat(1, len(pixels[0]))))
+
 
 def blank_vertical( pixels, x, width ):
     xmax = len(pixels[0])
@@ -101,7 +106,7 @@ data = get_data(getFileName())
 time_points = get_time_points(data)
 pixels = generateSinglePixelSparklines(time_points)
 pixels = scalePixels(pixels, 1, height / 2)
-addHorizontalLine(pixels, height / 2)
+drawcenterline(pixels, height)
 blank_vertical(pixels, int(current_time() - today_start()) / secondsperpixel + 1, blankspace)
 
 print("| templateImage=" + encodePngFromPixels(pixels))
