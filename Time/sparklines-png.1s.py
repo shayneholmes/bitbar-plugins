@@ -10,10 +10,10 @@ import sys
 import time
 
 height=9
-secondsperpixel=120
-width=270
-# workday length
-lookback=width*secondsperpixel
+secondsperpixel=300
+workwindowhours=9
+lookback=workwindowhours*3600
+width=lookback/secondsperpixel
 # one day in seconds
 day_offset=86400
 # blank space after now, in pixels
