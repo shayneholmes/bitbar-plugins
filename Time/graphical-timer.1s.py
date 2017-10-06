@@ -191,24 +191,24 @@ def write_status( timestamp, status ):
                 status,
                 getFileName()))
 
-def write_result( timestamp, status ):
+def write_result( timestamp, status, name ):
     os.system('echo "{:.0f}|{:d}| {:s} - {:s}" >> {:s}'
             .format(
                 timestamp,
                 status,
                 datetime.fromtimestamp(time.time()).isoformat(),
-                getfield('name', status),
+                name,
                 getstatusfile()))
 
 def record_active_timer():
     write_status(time.time(), status)
 
 def record_new_timer():
-    write_result(time.time(), status)
+    write_result(time.time(), status, getfield('name', status))
 
 def record_completion():
     # Write the disabled event at the end of the completed timer, even if it happened while we weren't running
-    write_result(starttime + totalseconds(), 0)
+    write_result(starttime + totalseconds(), 0, 'completed')
 
 def complete():
     record_completion()
