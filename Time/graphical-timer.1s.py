@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 # coding=utf-8
+
+# Potential areas for investment:
+# - Implement custom timers for shorter tasks
+# - Add an out-of-band timer that is separate from the main workflow one
+
 import base64
 from datetime import datetime
 import itertools
