@@ -1,19 +1,22 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 # coding=utf-8
+
+from PIL import Image, ImageDraw, ImageFont
 import base64
 from datetime import datetime
+from io import BytesIO
 import itertools
-import mmap
 import os
-import png
 import sys
 import time
+import bisect
 
-height=9
-secondsperpixel=300
+height=15
+secondsperpixel=180
+timepoints_size=1 # pixels chunked together
 workwindowhours=9
 lookback=workwindowhours*3600
-width=lookback/secondsperpixel
+width=lookback//secondsperpixel
 # one day in seconds
 day_offset=86400
 # blank space after now, in pixels
@@ -30,9 +33,9 @@ def today_start():
     return time.mktime(now.timetuple())
 
 def get_data( fileName ):
-    arr = [[0,0]]
+    arr = [(0,0)]
     with open(fileName) as f:
-        arr += [[int(x) for x in line.split('|')[0:2]] for line in f]
+        arr.extend([tuple(map(int, line.split('|')[0:2])) for line in f])
     return arr
 
 def get_time_points( time_points ):
@@ -40,72 +43,86 @@ def get_time_points( time_points ):
     inttime = int(current_time())
     earliesttime = today_start()
     timerange = lookback
-    point = 0
-    maxtimepoint = len(time_points)
+    point = None
+    maxtimepoint = len(time_points) - 1
     data = []
-    time_step = float(timerange) / width
+    time_step = float(timerange) / width * timepoints_size
     slice_time = earliesttime
-    for i in range(width):
-        # fast forward through time_points to the desired time
-        while point < maxtimepoint and time_points[point][0] <= slice_time:
-            point += 1
-        data.append(time_points[0 if point <= 0 else point - 1][1])
+    for i in range(width // timepoints_size):
+        if point is None:
+            # fast forward through time_points to the desired time
+            point = bisect.bisect_right(time_points, (slice_time, 0)) - 1
+        else:
+            # already have an anchor point, move incrementally
+            while point < maxtimepoint and time_points[point+1][0] <= slice_time:
+                point += 1
+        # point points to the entry that was in effect at slice_time
+        assert point < 0 or time_points[point][0] <= slice_time
+        assert point == maxtimepoint or time_points[point+1][0] > slice_time
+        if point < 0:
+            data.append(0) # not in history -> disabled
+        else:
+            data.append(time_points[point][1])
         slice_time += time_step
         if slice_time > inttime:
             slice_time -= day_offset
-            point = 0
+            point = None
     return data
 
-def generateSinglePixelSparklines( data ):
-    win = lambda k: 1 if k == 1 else 0
-    loss = lambda k: 1 if k == 2 else 0
-    return [[func(i) for i in data] for func in (win, loss)]
+def drawsparklines( im,draw,data ):
+    win = lambda k: True if k == 1 else False
+    loss = lambda k: True if k == 2 else False
+    color = (0,255)
+    w,h = im.size
+    m = h // 2
+    for i, d in enumerate(data):
+        y = 0 if win(d) else h if loss(d) else m
+        x = i * timepoints_size # data is as wide as the image
+        draw.rectangle([(x,m),(x+timepoints_size-1,y)],fill=color)
 
 def scalePixels( pixels, x, y ):
     return [[i for i in row for j in range(x)] for row in pixels for j in range(y)]
 
-def drawcenterline( pixels, height ):
-    if height % 2 == 0:
-        for i in range(0, len(pixels[0])):
-            pixels[y][i] += + 1
-    else:
-        pixels.insert(height / 2, list(itertools.repeat(1, len(pixels[0]))))
+def drawcenterline( im, draw ):
+    color = (0,255)
+    lw = 1 # line width
+    w, h = im.size
+    y = h // 2
+    draw.line([(0,y),(w,y)], fill=color, width=lw)
 
+def blank_vertical( im, draw, x, width ):
+    w,h = im.size
+    draw.rectangle([(max(x,0),0),(min(x+width,w),h)], fill=(0,0))
 
-def blank_vertical( pixels, x, width ):
-    xmax = len(pixels[0])
-    for i in range(0, len(pixels)):
-        for j in range(max(x,0), min(xmax,x+width)):
-            pixels[i][j] = 0
-
-def encodePngFromPixels( pixels ):
-    lfunc = lambda k: 0
-    afunc = lambda k: min(int(255 * k),255)
-    pixels = [[f(x) for x in row for f in (lfunc, afunc)] for row in pixels]
-    maxpngsize = 10000
-    mm = mmap.mmap(-1, maxpngsize)
-    png.from_array(pixels, 'LA').save(mm)
-    size = mm.tell() + 1
-    mm.seek(0)
-    imgData = base64.b64encode(mm.read(size))
+def base64encodeImage( image ):
+    output = BytesIO()
+    image.save(output, format="PNG", dpi=(72,72))
+    # image.save("../out.png", format="PNG", dpi=(144,144))
+    contents = output.getvalue()
+    # output.close()
+    size = output.tell() + 1
+    output.seek(0)
+    imgData = base64.b64encode(contents).decode("utf-8")
     return imgData
 
 def formattime(secs):
-    mins = secs / 60
+    mins = secs // 60
     if mins == 0:
         return ""
     else:
-        return "{:d}:{:02d}".format(int(mins / 60), int(mins % 60))
+        return "{:d}:{:02d}".format(mins // 60, mins % 60)
 
 data = get_data(getFileName())
 time_points = get_time_points(data)
-pixels = generateSinglePixelSparklines(time_points)
-pixels = scalePixels(pixels, 1, height / 2)
-drawcenterline(pixels, height)
-blank_vertical(pixels, int(current_time() - today_start()) / secondsperpixel + 1, blankspace)
+im = Image.new("LA", (width, height))
+draw = ImageDraw.Draw(im)
+drawsparklines(im,draw,time_points)
+drawcenterline(im, draw)
+blank_vertical(im, draw, int(current_time() - today_start()) // secondsperpixel + 1, blankspace)
+del draw
 
-print("| templateImage=" + encodePngFromPixels(pixels))
+print("| templateImage=" + base64encodeImage(im))
 print("---")
 print('Update | refresh=true')
 print("{} transitions over {}".format(len(data), formattime(lookback)))
-print("{} pixels".format(len(pixels[0])))
+print("{} pixels".format(width))

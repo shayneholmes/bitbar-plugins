@@ -1,75 +1,80 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3
 # coding=utf-8
 
 # Potential areas for investment:
 # - Implement custom timers for shorter tasks
 # - Add an out-of-band timer that is separate from the main workflow one
 
+from PIL import Image, ImageDraw, ImageFont
 import base64
 from datetime import datetime
+from io import BytesIO
 import itertools
-import mmap
+import numpy as np
 import os
-import png
 import sys
 import time
-
-height=10
-barwidth=48
 
 durationmultiplier=60
 
 statusinfo = {
         0: {
             'name': 'disabled',
+            'label': '',
             'duration': 0,
+            'spritefile': 'disabled.png',
             'sprite': [
-                '000000000',
-                '000000000',
-                '000000000',
-                '000000000',
-                '000010000',
-                '000000000',
-                '000000000',
-                '000000000',
-                '000000000',
-                '000000000',
-                '000000000',
+                '00000000000',
+                '00000000000',
+                '00000000000',
+                '00000000000',
+                '00000000000',
+                '00011111000',
+                '00000000000',
+                '00000000000',
+                '00000000000',
+                '00000000000',
+                '00000000000',
                 ]
             },
         1: {
             'name': 'work',
+            'label': 'w',
             'duration': 15*durationmultiplier,
             'completionsound': 'glass',
+            'spritefile': 'work.png',
             'sprite': [
-                '011111110',
-                '100000001',
-                '000000000',
-                '000000000',
-                '101000101',
-                '101010101',
-                '101010101',
-                '100101001',
-                '100000001',
-                '011111110',
+                '00111111100',
+                '01000000010',
+                '10010001001',
+                '10010001001',
+                '10010001001',
+                '10010101001',
+                '10010101001',
+                '10010101001',
+                '10001010001',
+                '01000000010',
+                '00111111100',
                 ]
             },
         2: {
             'name': 'break',
+            'label': 'b',
             'duration': 5*durationmultiplier,
             'completionsound': 'glass',
+            'spritefile': 'break.png',
             'sprite': [
-                '000000000',
-                '011111100',
-                '010000010',
-                '000000000',
-                '000000000',
-                '000000000',
-                '011111100',
-                '010000010',
-                '010000010',
-                '011111100',
-                '000000000',
+                '00111111100',
+                '01000000010',
+                '10011110001',
+                '10010001001',
+                '10010001001',
+                '10011110001',
+                '10010001001',
+                '10010001001',
+                '10011110001',
+                '01000000010',
+                '00111111100',
                 ]
             },
         }
@@ -96,7 +101,7 @@ def loadStateFromFile( fileName ):
     return arr
 
 def elapsedseconds():
-    return time.time() - starttime
+    return int(time.time() - starttime)
 
 def totalseconds():
     return getfield('duration')
@@ -106,7 +111,7 @@ def remainingseconds():
 
 def percentageelapsed():
     try:
-        return elapsedseconds() / totalseconds()
+        return min(1,max(0,elapsedseconds() / totalseconds()))
     except:
         return 0
 
@@ -114,30 +119,26 @@ def formattime(secs):
     if secs == 0:
         return ""
     else:
-        return "{:d}:{:02d}".format(int(secs / 60), int(secs % 60))
+        return "{:d}:{:02d}".format(secs // 60, secs % 60)
+
+exepath = os.path.realpath(os.path.dirname(sys.argv[0]))
 
 def getsprite():
+    # return Image.open(exepath + '/graphical-timer/' + getfield('spritefile'))
     packed = getfield('sprite')
     pixels = [[int(x) for x in row] for row in packed]
-    return pixels
-
-def generateProgressBar( percentage ):
-    filledpixels = percentage * barwidth
-    pixels = [[1 if filledpixels - i > 0 else 0 for i in range(barwidth)] for i in range(height)]
-    if status == 0:
-        pixels = addHorizontalLine(pixels, height / 2)
-    else:
-        pixels = fillborders(pixels)
-    return pixels
+    w,h = len(packed[0]),len(packed)
+    return Image.frombytes(mode='1', size=(w,h), data=np.packbits(pixels, axis=1))
+    return Image.fromarray(np.asarray(pixels), "L")
 
 def expandtosize( pixels, w, h ):
     currenth = len(pixels)
     currentw = len(pixels[0])
     newh = max(h, currenth)
     neww = max(w, currentw)
-    paddingtop = (newh - currenth) / 2
+    paddingtop = (newh - currenth) // 2
     paddingbottom = (newh - currenth - paddingtop)
-    paddingleft = (neww - currentw) / 2
+    paddingleft = (neww - currentw) // 2
     paddingright = (neww - currentw - paddingleft)
     paddedpixels = []
     paddedpixels += itertools.repeat(itertools.repeat(0,neww), paddingtop)
@@ -150,40 +151,15 @@ def expandtosize( pixels, w, h ):
     paddedpixels += itertools.repeat(itertools.repeat(0,neww), paddingbottom)
     return paddedpixels
 
-def joinwithpadding( leftpixels, rightpixels, padding):
-    pixels = []
-    rows = max(len(leftpixels),len(rightpixels))
-    leftpixels = expandtosize(leftpixels, 0, rows)
-    rightpixels = expandtosize(rightpixels, 0, rows)
-    for y in range(rows):
-        row = []
-        row += leftpixels[y]
-        row += [0 for i in range(padding)]
-        row += rightpixels[y]
-        pixels.append(row)
-    return pixels
-
-def addHorizontalLine( pixels, y ):
-    linefunc = lambda pos, target, pixel: pixel + 1 if pos == target else pixel
-    pixels = [[linefunc(pos, y, pixel) for pixel in pixels[pos]] for pos in range(len(pixels))]
-    return pixels
-
-def fillborders( pixels ):
-    func = lambda x, y, cur: 1 if x == 0 or x == barwidth-1 or y == 0 or y == height-1 else cur
-    return [[func(x, y, pixels[y][x]) for x in range(barwidth)] for y in range(height)]
-
-def scalePixels( pixels, x, y ):
-    return [[i for i in row for j in range(x)] for row in pixels for j in range(y)]
-
-def encodePngFromPixels( pixels ):
-    lfunc = lambda k: 0
-    afunc = lambda k: min(int(255 * k),255)
-    pixels = [[f(x) for x in row for f in (lfunc, afunc)] for row in pixels]
-    mm = mmap.mmap(-1, 10000)
-    png.from_array(pixels, 'LA').save(mm)
-    size = mm.tell() + 1
-    mm.seek(0)
-    imgData = base64.b64encode(mm.read(size))
+def base64encodeImage( image ):
+    output = BytesIO()
+    image.save(output, format="PNG", dpi=(72,72))
+    # image.save("../out.png", format="PNG", dpi=(144,144))
+    contents = output.getvalue()
+    # output.close()
+    size = output.tell() + 1
+    output.seek(0)
+    imgData = base64.b64encode(contents).decode("utf-8")
     return imgData
 
 def bashcommand( param ):
@@ -258,12 +234,50 @@ if len(sys.argv) > 1:
 starttime, status = loadStateFromFile(getFileName())
 checkforcompletion()
 percent = percentageelapsed()
-pixels = generateProgressBar(percent)
-pixels = joinwithpadding(getsprite(), pixels, 3)
 
-print("| templateImage=" + encodePngFromPixels(pixels))
+def drawProgressBar(draw, percent):
+    x1 = width - 1 - barwidth
+    x2 = width - 1
+    bartop = (height - barheight) // 2
+    y1, y2 = bartop, bartop + barheight - 1
+    lw = 1 # line width
+    color = (0,255)
+    if status == 0:
+        # simple line
+        mid = (y2 + y1) // 2
+        draw.line([(x1,mid),(x2,mid)], fill=color, width=lw)
+    else:
+        # draw outline
+        for i in range(lw):
+            draw.rectangle([(x1+i,y1+i),(x2-i,y2-i)],outline=color)
+        pad = 2
+        # fill percentage
+        x1 += lw+pad
+        x2 -= lw+pad
+        draw.rectangle([(x1,y1+lw+pad),(int(x1 + (x2 - x1) * percent),y2-(lw+pad))],fill=color)
+
+def drawLabel(draw):
+    label = getfield('label')
+    font = ImageFont.truetype("/System/Library/Fonts/HelveticaNeueDeskInterface.ttc", size=24)
+    draw.text((128,0), label, font=font, fill=(0,255))
+
+height = 15 # sprite is square, so width should be the same
+sprite_height = 11
+
+padding = 2
+barheight = 13
+barwidth = 64
+width = height + padding + barwidth
+im = Image.new("LA", (width, height))
+draw = ImageDraw.Draw(im)
+drawProgressBar(draw, percent)
+# drawLabel(draw)
+draw.bitmap((0,(height-sprite_height)//2), getsprite(), fill=(0,255))
+del draw
+
+print("| templateImage=" + base64encodeImage(im))
 print("---")
-print(formattime(remainingseconds()))
+print("%s (%d%%)"%(formattime(remainingseconds()),percent*100))
 print('Work | terminal=false refresh=true ' + bashcommand('work'))
 print('Break | terminal=false refresh=true ' + bashcommand('break'))
 print('Disable | terminal=false refresh=true ' + bashcommand('disable'))
