@@ -20,21 +20,21 @@ statusinfo = {
             'name': 'disabled',
             'label': '',
             'duration': 0,
-            'spritefile': 'disabled.png',
+            'spritedata': 'iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAAAAAAevcqWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAB3RJTUUH4gIcEzYlKy/zdQAAABhJREFUCNdj/M+AClD5/5nQpIcanxHNfwC4oAQXpQbj4gAAAABJRU5ErkJggg==',
             },
         1: {
             'name': 'work',
             'label': 'w',
             'duration': 15*durationmultiplier,
             'completionsound': 'glass',
-            'spritefile': 'work.png',
+            'spritedata': 'iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAAAAAAevcqWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAB3RJTUUH4gMBDyYyaBGYBQAAADVJREFUCNdj/M+AClD5/5mQRf4zMDAxYKr/j8RkQjMGm3qG/1CIpJ4Bn3qoJuLVI3iMaP4DAJT/Fvy6pMB/AAAAAElFTkSuQmCC',
             },
         2: {
             'name': 'break',
             'label': 'b',
             'duration': 5*durationmultiplier,
             'completionsound': 'glass',
-            'spritefile': 'break.png',
+            'spritedata': 'iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAAAAAAevcqWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAB3RJTUUH4gIcFAANksncfwAAAC9JREFUCNdj/M+AClD5/5nQpFmQlDBC+QyMUMWMDAzo6rHphxlALf2MeNQzovkPADmXCSY5FP/rAAAAAElFTkSuQmCC',
             },
         }
         
@@ -83,7 +83,7 @@ def formattime(secs):
 exepath = os.path.realpath(os.path.dirname(sys.argv[0]))
 
 def getsprite():
-    return Image.open(exepath + '/graphical-timer/' + getfield('spritefile'))
+    return Image.open(BytesIO(base64.b64decode(getfield('spritedata'))))
 
 def base64encodeImage( image ):
     output = BytesIO()
