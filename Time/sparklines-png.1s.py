@@ -32,10 +32,30 @@ def today_start():
     now = datetime.now().replace(hour=6, minute=30, second=0, microsecond=0)
     return time.mktime(now.timetuple())
 
-def get_data( fileName ):
+class FileSearcher(object):
+    def __init__(self, file_pointer):
+        self.f = file_pointer
+        self.f.seek(0, os.SEEK_END)
+        self.len = self.f.tell()
+    def __len__(self):
+        return self.len
+    def __getitem__(self, item):
+        self.f.seek(item)
+        if (item):
+            self.f.readline()
+        row = self.f.readline()
+        return int(row[0:row.find('|')])
+
+def get_data( fileName, start_time = 0):
     arr = [(0,0)]
-    with open(fileName) as f:
-        arr.extend([tuple(map(int, line.split('|')[0:2])) for line in f])
+    with open(fileName, 'r') as f:
+        # binary search for row with largest key s.t. key < start_time
+        sf = FileSearcher(f)
+        start = bisect.bisect_left(sf, start_time)
+        f.seek(start)
+        # read to the end of the file, with no intermediate readline; this will
+        # start with the previous record thanks to bisect_left
+        arr.extend([tuple(map(int, line.split('|')[0:2])) for line in f.readlines()])
     return arr
 
 def get_time_points( time_points ):
@@ -112,7 +132,7 @@ def formattime(secs):
     else:
         return "{:d}:{:02d}".format(mins // 60, mins % 60)
 
-data = get_data(getFileName())
+data = get_data(getFileName(), int(today_start()) - day_offset)
 time_points = get_time_points(data)
 im = Image.new("LA", (width, height))
 draw = ImageDraw.Draw(im)
