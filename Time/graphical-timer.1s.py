@@ -100,20 +100,20 @@ def bashcommand( param ):
     return 'bash="' + os.path.abspath(__file__) + '" param1=' + param
 
 def write_status( timestamp, status ):
-    os.system('echo "{:.0f}|{:d}" > {:s}'
+    with open(getFileName(),'w') as f:
+        f.write("{:.0f}|{:d}"
             .format(
                 timestamp,
-                status,
-                getFileName()))
+                status))
 
 def write_result( timestamp, status, name ):
-    os.system('echo "{:.0f}|{:d}| {:s} - {:s}" >> {:s}'
+    with open(getstatusfile(),'a') as f:
+        f.write("{:.0f}|{:d}| {:s} - {:s}\n"
             .format(
                 timestamp,
                 status,
                 datetime.fromtimestamp(time.time()).isoformat(),
-                name,
-                getstatusfile()))
+                name))
 
 def record_active_timer():
     write_status(time.time(), status)
