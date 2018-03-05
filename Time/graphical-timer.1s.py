@@ -35,8 +35,8 @@ statusinfo = {
             },
         }
         
-def getfield( field, which=-1 ):
-    if which == -1:
+def getfield( field, which=None ):
+    if which is None:
         which = status
     return statusinfo[which][field]
 
@@ -103,7 +103,7 @@ def write_status( timestamp, status ):
                 timestamp,
                 status))
 
-def write_result( timestamp, status, name ):
+def write_history( timestamp, status, name ):
     with open(getstatusfile(),'a') as f:
         f.write("{:.0f}|{:d}| {:s} - {:s}\n"
             .format(
@@ -116,11 +116,11 @@ def record_active_timer():
     write_status(time.time(), status)
 
 def record_new_timer():
-    write_result(time.time(), status, getfield('name', status))
+    write_history(time.time(), status, getfield('name'))
 
 def record_completion():
     # Write the disabled event at the end of the completed timer, even if it happened while we weren't running
-    write_result(starttime + totalseconds(), 0, 'completed')
+    write_history(starttime + totalseconds(), 0, 'completed')
 
 def complete():
     record_completion()
