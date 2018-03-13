@@ -34,7 +34,7 @@ statusinfo = {
             'spritedata': 'iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAAAAAAevcqWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAB3RJTUUH4gIcFAANksncfwAAAC9JREFUCNdj/M+AClD5/5nQpFmQlDBC+QyMUMWMDAzo6rHphxlALf2MeNQzovkPADmXCSY5FP/rAAAAAElFTkSuQmCC',
             },
         }
-        
+
 def getfield( field, which=None ):
     if which is None:
         which = status
@@ -56,18 +56,18 @@ def loadStateFromFile( fileName ):
         arr = [time.time(), 0]
     return arr
 
-def elapsedseconds():
+def elapsed_secs():
     return int(time.time() - starttime)
 
-def totalseconds():
+def duration_secs():
     return getfield('duration')
 
-def remainingseconds():
-    return max(0, totalseconds() - elapsedseconds())
+def remaining_secs():
+    return max(0, duration_secs() - elapsed_secs())
 
-def percentageelapsed():
+def elapsed_percent():
     try:
-        return min(1,max(0,elapsedseconds() / totalseconds()))
+        return min(1,max(0,elapsed_secs() / duration_secs()))
     except:
         return 0
 
@@ -85,11 +85,7 @@ def getsprite():
 def base64encodeImage( image ):
     output = BytesIO()
     image.save(output, format="PNG", dpi=(72,72))
-    # image.save("../out.png", format="PNG", dpi=(144,144))
     contents = output.getvalue()
-    # output.close()
-    size = output.tell() + 1
-    output.seek(0)
     imgData = base64.b64encode(contents).decode("utf-8")
     return imgData
 
@@ -120,7 +116,7 @@ def record_new_timer():
 
 def record_completion():
     # Write the disabled event at the end of the completed timer, even if it happened while we weren't running
-    write_history(starttime + totalseconds(), 0, 'completed')
+    write_history(starttime + duration_secs(), 0, 'completed')
 
 def complete():
     record_completion()
@@ -146,7 +142,7 @@ def setdisabled():
     record_new_timer()
 
 def checkforcompletion():
-    if status != 0 and remainingseconds() <= 0:
+    if status != 0 and remaining_secs() <= 0:
         complete()
         settimer(0)
 
@@ -164,7 +160,7 @@ if len(sys.argv) > 1:
 
 starttime, status = loadStateFromFile(getFileName())
 checkforcompletion()
-percent = percentageelapsed()
+percent = elapsed_percent()
 
 def drawProgressBar(draw, percent):
     x1 = width - 1 - barwidth
@@ -201,7 +197,7 @@ del draw
 
 print("| templateImage=" + base64encodeImage(im))
 print("---")
-print("%s (%d%%)"%(formattime(remainingseconds()),percent*100))
+print("%s (%d%%)"%(formattime(remaining_secs()),percent*100))
 print('Work | terminal=false refresh=true ' + bashcommand('work'))
 print('Break | terminal=false refresh=true ' + bashcommand('break'))
 print('Disable | terminal=false refresh=true ' + bashcommand('disable'))
