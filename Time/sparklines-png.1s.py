@@ -44,6 +44,8 @@ class FileSearcher(object):
         if (item):
             self.f.readline()
         row = self.f.readline()
+        if not len(row):
+            return sys.maxsize
         return int(row[0:row.find('|')])
 
 def get_data( fileName, start_time = 0):
