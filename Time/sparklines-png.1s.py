@@ -134,7 +134,7 @@ def formattime(secs):
     else:
         return "{:d}:{:02d}".format(mins // 60, mins % 60)
 
-data = get_data(getFileName(), int(today_start()) - day_offset)
+data = get_data(getFileName(), int(current_time()) - day_offset)
 time_points = get_time_points(data)
 im = Image.new("LA", (width, height))
 draw = ImageDraw.Draw(im)
