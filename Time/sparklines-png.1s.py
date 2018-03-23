@@ -1,6 +1,11 @@
 #!/usr/local/bin/python3
 # coding=utf-8
 
+"""
+Future ideas:
+    * Multi-day (past days leave traces on chart, either faded or shorter)
+"""
+
 from PIL import Image, ImageDraw, ImageFont
 import base64
 from datetime import datetime
