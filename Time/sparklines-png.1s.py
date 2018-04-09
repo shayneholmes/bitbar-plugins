@@ -71,6 +71,8 @@ def add_to_tuple( old, newval ):
     # aggregate newval into a tuple
     if old is None:
         return None
+    if newval == 0:
+        return old
     win,loss = old
     if newval > 0 and win < newval:
         win = newval
@@ -89,7 +91,6 @@ def get_time_points( time_points ):
     for day in range(historydays):
         daystart = today_start() - day * day_offset
         barheight = pow(historydecay,day) # will decay with each day
-        # fast forward through time_points to the desired time
         point = bisect.bisect_right(time_points, (daystart, 0)) - 1
         for i in range(len(data)):
             slice_time = daystart + i * time_step
@@ -97,7 +98,6 @@ def get_time_points( time_points ):
                 break # move to previous day
             if data[i] is None:
                 continue
-            # already have an anchor point, move incrementally
             while point < maxtimepoint and time_points[point+1][0] <= slice_time:
                 point += 1
             # point points to the entry that was in effect at slice_time
