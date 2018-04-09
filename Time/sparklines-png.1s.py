@@ -20,6 +20,8 @@ height=15
 secondsperpixel=180
 timepoints_size=1 # pixels chunked together
 workwindowhours=9
+historydays=3 # days to look back
+historydecay=0.5 # exponential decay constant (per day)
 lookback=workwindowhours*3600
 width=lookback//secondsperpixel
 # one day in seconds
@@ -67,43 +69,50 @@ def get_data( fileName, start_time = 0):
 
 def get_time_points( time_points ):
     # poll over time, starting with the first data point
-    inttime = int(current_time())
+    day_boundary = int(current_time())
     earliesttime = today_start()
     timerange = lookback
-    point = None
     maxtimepoint = len(time_points) - 1
-    data = []
+    data = [0]*(width // timepoints_size)
     time_step = float(timerange) / width * timepoints_size
-    slice_time = earliesttime
-    for i in range(width // timepoints_size):
-        if point is None:
-            # fast forward through time_points to the desired time
-            point = bisect.bisect_right(time_points, (slice_time, 0)) - 1
-        else:
-            # already have an anchor point, move incrementally
-            while point < maxtimepoint and time_points[point+1][0] <= slice_time:
-                point += 1
-        # point points to the entry that was in effect at slice_time
-        assert point < 0 or time_points[point][0] <= slice_time
-        assert point == maxtimepoint or time_points[point+1][0] > slice_time
-        if point < 0:
-            data.append(0) # not in history -> disabled
-        else:
-            timer_type = time_points[point][1]
-            if timer_type == 1:
-                val = 1 # win
-            elif timer_type == 2:
-                val = -1 # loss
+    barheight = 1 # will decay with each day
+    for day in range(historydays):
+        point = None
+        for i in range(len(data)):
+            slice_time = earliesttime + i * time_step
+            if slice_time > day_boundary:
+                # day boundary, rewind time a day and insert blanks, if any
+                earliesttime -= day_offset
+                point = None # reset so binary search will happen
+                for j in range(blankspace):
+                    if i+j < len(data):
+                        data[i+j] = None
+                barheight *= historydecay
+            if data[i] is None:
+                continue
+            if point is None:
+                # fast forward through time_points to the desired time
+                point = bisect.bisect_right(time_points, (slice_time, 0)) - 1
             else:
-                val = 0
-            data.append(val)
-        slice_time += time_step
-        if slice_time > inttime:
-            # day boundary, rewind time a day and insert blanks, if any
-            slice_time -= day_offset
-            point = None # reset so binary search will happen
-            slice_time += time_step * blankspace
-            data.extend([None]*blankspace)
+                # already have an anchor point, move incrementally
+                while point < maxtimepoint and time_points[point+1][0] <= slice_time:
+                    point += 1
+            # point points to the entry that was in effect at slice_time
+            assert point < 0 or time_points[point][0] <= slice_time
+            assert point == maxtimepoint or time_points[point+1][0] > slice_time
+            if point < 0:
+                val = 0 # not in history -> disabled
+            else:
+                timer_type = time_points[point][1]
+                if timer_type == 1:
+                    val = barheight # win
+                elif timer_type == 2:
+                    val = -barheight # loss
+                else:
+                    val = 0
+            if abs(data[i]) < abs(val):
+                data[i] = val
+        day_boundary -= day_offset
     return data
 
 def drawsparklines( im,draw,data ):
@@ -134,7 +143,7 @@ def formattime(secs):
     else:
         return "{:d}:{:02d}".format(mins // 60, mins % 60)
 
-data = get_data(getFileName(), int(current_time()) - day_offset)
+data = get_data(getFileName(), int(current_time()) - day_offset * historydays)
 time_points = get_time_points(data)
 im = Image.new("LA", (width, height))
 draw = ImageDraw.Draw(im)
