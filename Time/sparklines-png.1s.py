@@ -10,6 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 import base64
 from datetime import datetime
 from io import BytesIO
+import math
 import os
 import sys
 import time
@@ -66,36 +67,39 @@ def get_data( fileName, start_time = 0):
         arr.extend([tuple(map(int, line.split('|')[0:2])) for line in f.readlines()])
     return arr
 
+def add_to_tuple( old, newval ):
+    # aggregate newval into a tuple
+    if old is None:
+        return None
+    win,loss = old
+    if newval > 0 and win < newval:
+        win = newval
+    if newval < 0 and loss < -newval:
+        loss = -newval
+    return (win,loss)
+
 def get_time_points( time_points ):
     # poll over time, starting with the first data point
-    day_boundary = int(current_time())
-    earliesttime = today_start()
-    timerange = lookback
+    currenttime = int(current_time())
+    time_step = float(lookback) / width * timepoints_size
     maxtimepoint = len(time_points) - 1
-    data = [0]*(width // timepoints_size)
-    time_step = float(timerange) / width * timepoints_size
-    barheight = 1 # will decay with each day
+    data = [(0,0)]*(width // timepoints_size)
+    now = int((currenttime - today_start()) // time_step)
+    data[now:now+blankspace] = [None]*blankspace # insert blanks
     for day in range(historydays):
-        point = None
+        daystart = today_start() - day * day_offset
+        barheight = pow(historydecay,day) # will decay with each day
+        # fast forward through time_points to the desired time
+        point = bisect.bisect_right(time_points, (daystart, 0)) - 1
         for i in range(len(data)):
-            slice_time = earliesttime + i * time_step
-            if slice_time > day_boundary:
-                # day boundary, rewind time a day and insert blanks, if any
-                earliesttime -= day_offset
-                point = None # reset so binary search will happen
-                for j in range(blankspace):
-                    if i+j < len(data):
-                        data[i+j] = None
-                barheight *= historydecay
+            slice_time = daystart + i * time_step
+            if slice_time > currenttime:
+                break # move to previous day
             if data[i] is None:
                 continue
-            if point is None:
-                # fast forward through time_points to the desired time
-                point = bisect.bisect_right(time_points, (slice_time, 0)) - 1
-            else:
-                # already have an anchor point, move incrementally
-                while point < maxtimepoint and time_points[point+1][0] <= slice_time:
-                    point += 1
+            # already have an anchor point, move incrementally
+            while point < maxtimepoint and time_points[point+1][0] <= slice_time:
+                point += 1
             # point points to the entry that was in effect at slice_time
             assert point < 0 or time_points[point][0] <= slice_time
             assert point == maxtimepoint or time_points[point+1][0] > slice_time
@@ -109,9 +113,7 @@ def get_time_points( time_points ):
                     val = -barheight # loss
                 else:
                     val = 0
-            if abs(data[i]) < abs(val):
-                data[i] = val
-        day_boundary -= day_offset
+            data[i] = add_to_tuple(data[i], val)
     return data
 
 def drawsparklines( im,draw,data ):
@@ -120,9 +122,10 @@ def drawsparklines( im,draw,data ):
     m = h // 2
     for i, d in enumerate(data):
         if d is not None:
-            y = m - m * d
+            top = m - math.floor(m * d[0])
+            bottom = m + math.floor(m * d[1])
             x = i * timepoints_size # data is as wide as the image
-            draw.rectangle([(x,m),(x+timepoints_size-1,y)],fill=color)
+            draw.rectangle([(x,top),(x+timepoints_size-1,bottom)],fill=color)
 
 def base64encodeImage( image ):
     output = BytesIO()
