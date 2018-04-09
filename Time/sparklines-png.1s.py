@@ -10,7 +10,6 @@ from PIL import Image, ImageDraw, ImageFont
 import base64
 from datetime import datetime
 from io import BytesIO
-import itertools
 import os
 import sys
 import time
