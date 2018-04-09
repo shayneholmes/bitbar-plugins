@@ -89,37 +89,32 @@ def get_time_points( time_points ):
         if point < 0:
             data.append(0) # not in history -> disabled
         else:
-            data.append(time_points[point][1])
+            timer_type = time_points[point][1]
+            if timer_type == 1:
+                val = 1 # win
+            elif timer_type == 2:
+                val = -1 # loss
+            else:
+                val = 0
+            data.append(val)
         slice_time += time_step
         if slice_time > inttime:
+            # day boundary, rewind time a day and insert blanks, if any
             slice_time -= day_offset
-            point = None
+            point = None # reset so binary search will happen
+            slice_time += time_step * blankspace
+            data.extend([None]*blankspace)
     return data
 
 def drawsparklines( im,draw,data ):
-    win = lambda k: True if k == 1 else False
-    loss = lambda k: True if k == 2 else False
     color = (0,255)
     w,h = im.size
     m = h // 2
     for i, d in enumerate(data):
-        y = 0 if win(d) else h if loss(d) else m
-        x = i * timepoints_size # data is as wide as the image
-        draw.rectangle([(x,m),(x+timepoints_size-1,y)],fill=color)
-
-def scalePixels( pixels, x, y ):
-    return [[i for i in row for j in range(x)] for row in pixels for j in range(y)]
-
-def drawcenterline( im, draw ):
-    color = (0,255)
-    lw = 1 # line width
-    w, h = im.size
-    y = h // 2
-    draw.line([(0,y),(w,y)], fill=color, width=lw)
-
-def blank_vertical( im, draw, x, width ):
-    w,h = im.size
-    draw.rectangle([(max(x,0),0),(min(x+width,w),h)], fill=(0,0))
+        if d is not None:
+            y = m - m * d
+            x = i * timepoints_size # data is as wide as the image
+            draw.rectangle([(x,m),(x+timepoints_size-1,y)],fill=color)
 
 def base64encodeImage( image ):
     output = BytesIO()
@@ -144,8 +139,6 @@ time_points = get_time_points(data)
 im = Image.new("LA", (width, height))
 draw = ImageDraw.Draw(im)
 drawsparklines(im,draw,time_points)
-drawcenterline(im, draw)
-blank_vertical(im, draw, int(current_time() - today_start()) // secondsperpixel + 1, blankspace)
 del draw
 
 print("| templateImage=" + base64encodeImage(im))
