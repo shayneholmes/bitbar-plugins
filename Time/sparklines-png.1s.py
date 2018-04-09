@@ -93,16 +93,16 @@ def get_time_points( time_points ):
         barheight = pow(historydecay,day) # will decay with each day
         point = bisect.bisect_right(time_points, (daystart, 0)) - 1
         for i in range(len(data)):
-            slice_time = daystart + i * time_step
-            if slice_time > currenttime:
+            time_of_point = daystart + i * time_step
+            if time_of_point > currenttime:
                 break # move to previous day
             if data[i] is None:
                 continue
-            while point < maxtimepoint and time_points[point+1][0] <= slice_time:
+            while point < maxtimepoint and time_points[point+1][0] <= time_of_point:
                 point += 1
-            # point points to the entry that was in effect at slice_time
-            assert point < 0 or time_points[point][0] <= slice_time
-            assert point == maxtimepoint or time_points[point+1][0] > slice_time
+            # point points to the entry that was in effect at time_of_point
+            assert point < 0 or time_points[point][0] <= time_of_point
+            assert point == maxtimepoint or time_points[point+1][0] > time_of_point
             if point < 0:
                 val = 0 # not in history -> disabled
             else:
