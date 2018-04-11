@@ -20,7 +20,7 @@ height=15
 secondsperpixel=180
 timepoints_size=1 # pixels chunked together
 workwindowhours=9
-historydays=3 # days to look back
+historydays=7 # days to look back
 historydecay=0.5 # exponential decay constant (per day)
 lookback=workwindowhours*3600
 width=lookback//secondsperpixel
@@ -88,10 +88,15 @@ def get_time_points( time_points ):
     data = [(0,0)]*(width // timepoints_size)
     now = int((currenttime - today_start()) // time_step)
     data[now:now+blankspace] = [None]*blankspace # insert blanks
+    daysskipped = 0
     for day in range(historydays):
         daystart = today_start() - day * day_offset
-        barheight = pow(historydecay,day) # will decay with each day
+        barheight = pow(historydecay,day - daysskipped) # will decay with each day
         point = bisect.bisect_right(time_points, (daystart, 0)) - 1
+        if point < maxtimepoint and time_points[point+1][0] > daystart + day_offset:
+            # no data available for this day
+            daysskipped += 1
+            continue
         for i in range(len(data)):
             time_of_point = daystart + i * time_step
             if time_of_point > currenttime:
@@ -145,7 +150,7 @@ def formattime(secs):
     else:
         return "{:d}:{:02d}".format(mins // 60, mins % 60)
 
-data = get_data(getFileName(), int(current_time()) - day_offset * historydays)
+data = get_data(getFileName(), int(today_start()) - day_offset * historydays)
 time_points = get_time_points(data)
 im = Image.new("LA", (width, height))
 draw = ImageDraw.Draw(im)
