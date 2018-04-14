@@ -93,7 +93,7 @@ def get_time_points( time_points ):
         daystart = today_start() - day * day_offset
         barheight = pow(historydecay,day - daysskipped) # will decay with each day
         point = bisect.bisect_right(time_points, (daystart, 0)) - 1
-        if point < maxtimepoint and time_points[point+1][0] > daystart + day_offset:
+        if day > 0 and (point == maxtimepoint or time_points[point+1][0] > daystart + day_offset):
             # no data available for this day
             daysskipped += 1
             continue
