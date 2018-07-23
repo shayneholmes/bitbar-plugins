@@ -127,8 +127,7 @@ def record_completion():
 
 def complete():
     record_completion()
-    command = 'osascript -e "display notification \\"Finished {}\\" with title \\"{}\\" sound name \\"{}\\"" &> /dev/null'.format(
-        getfield('name'), getfield('name'), getfield('completionsound'))
+    command = 'open -g hammerspoon://timerComplete?timer={}'.format(getfield('name'))
     os.system(command)
 
 def settimer( newstatus ):
