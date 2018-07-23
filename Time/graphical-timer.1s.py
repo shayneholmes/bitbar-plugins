@@ -33,11 +33,18 @@ statusinfo = {
             'completionsound': 'glass',
             'spritedata': 'iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAAAAAAevcqWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAB3RJTUUH4gIcFAANksncfwAAAC9JREFUCNdj/M+AClD5/5nQpFmQlDBC+QyMUMWMDAzo6rHphxlALf2MeNQzovkPADmXCSY5FP/rAAAAAElFTkSuQmCC',
             },
+        3: {
+            'name': 'completed',
+            'duration': 0,
+            'spritedata': 'iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAAAAAAevcqWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAB3RJTUUH4gIcEzYlKy/zdQAAABhJREFUCNdj/M+AClD5/5nQpIcanxHNfwC4oAQXpQbj4gAAAABJRU5ErkJggg==', # same as disabled for now, could be a gold star?
+            },
         }
 
 def getfield( field, which=None ):
     if which is None:
         which = status
+    if which == 3: # completed; this shouldn't happen!
+        which = 0 # disabled
     return statusinfo[which][field]
 
 def getFileName():
@@ -115,8 +122,8 @@ def record_new_timer():
     write_history(time.time(), status, getfield('name'))
 
 def record_completion():
-    # Write the disabled event at the end of the completed timer, even if it happened while we weren't running
-    write_history(starttime + duration_secs(), 0, 'completed')
+    # Write the completed event at the end of the completed timer, even if it happened while we weren't running
+    write_history(starttime + duration_secs(), 3, 'completed')
 
 def complete():
     record_completion()
@@ -142,9 +149,9 @@ def setdisabled():
     record_new_timer()
 
 def checkforcompletion():
-    if status != 0 and remaining_secs() <= 0:
+    if (status != 0 and status != 3) and remaining_secs() <= 0:
         complete()
-        settimer(0)
+        settimer(3)
 
 commands = {
         'work': setwork,
@@ -169,7 +176,7 @@ def drawProgressBar(draw, percent):
     y1, y2 = bartop, bartop + barheight - 1
     lw = 1 # line width
     color = (0,255)
-    if status == 0:
+    if status == 0 or status == 3:
         # simple line
         mid = (y2 + y1) // 2
         draw.line([(x1,mid),(x2,mid)], fill=color, width=lw)
