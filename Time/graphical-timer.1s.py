@@ -127,7 +127,9 @@ def record_completion():
 
 def complete():
     record_completion()
-    command = 'open -g hammerspoon://timerComplete?timer={}'.format(getfield('name'))
+    command = "open -g 'hammerspoon://timerComplete?timer={}'".format(getfield('name'))
+    os.system(command)
+    command = "open -g 'bitbar://refreshPlugin?name=work-timer-count.*.py'"
     os.system(command)
 
 def settimer( newstatus ):
