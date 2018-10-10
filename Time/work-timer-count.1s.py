@@ -1,11 +1,6 @@
 #!/usr/local/bin/python3
 # coding=utf-8
 
-"""
-Future ideas:
-    * Multi-day (past days leave traces on chart, either faded or shorter)
-"""
-
 from PIL import Image, ImageDraw, ImageFont
 import base64
 from datetime import datetime
@@ -16,14 +11,13 @@ import sys
 import time
 import bisect
 
-height=15
-secondsperpixel=180
-timepoints_size=1 # pixels chunked together
-workwindowhours=9
-historydays=0 # days to look back
-historydecay=0.5 # exponential decay constant (per day)
-lookback=workwindowhours*3600
-width=lookback//secondsperpixel
+goal=10
+
+height=8
+boxwidth=8
+boxseparation=1
+fillmargin=1 # space around fill
+width=goal*(boxwidth+boxseparation)+boxseparation
 # one day in seconds
 day_offset=86400
 # blank space after now, in pixels
@@ -67,19 +61,6 @@ def get_data( fileName, start_time = 0):
         arr.extend([tuple(map(int, line.split('|')[0:2])) for line in f.readlines()])
     return arr
 
-def add_to_tuple( old, newval ):
-    # aggregate newval into a tuple
-    if old is None:
-        return None
-    if newval == 0:
-        return old
-    win,loss = old
-    if newval > 0 and win < newval:
-        win = newval
-    if newval < 0 and loss < -newval:
-        loss = -newval
-    return (win,loss)
-
 def completed_timers( time_points, target_timer_type ):
     # count number of target timers that have been successfully completed (as denoted by a completed timer after it in the file)
     completed_count = 0
@@ -92,57 +73,25 @@ def completed_timers( time_points, target_timer_type ):
         active = (timer_type == target_timer_type)
     return completed_count
 
-def get_time_points( time_points ):
-    # poll over time, starting with the first data point
-    currenttime = int(current_time())
-    time_step = float(lookback) / width * timepoints_size
-    maxtimepoint = len(time_points) - 1
-    data = [(0,0)]*(width // timepoints_size)
-    now = int((currenttime - today_start()) // time_step)
-    data[now:now+blankspace] = [None]*blankspace # insert blanks
-    daysskipped = 0
-    for day in range(historydays):
-        daystart = today_start() - day * day_offset
-        barheight = pow(historydecay,day - daysskipped) # will decay with each day
-        point = bisect.bisect_right(time_points, (daystart, 0)) - 1
-        if day > 0 and (point == maxtimepoint or time_points[point+1][0] > daystart + day_offset):
-            # no data available for this day
-            daysskipped += 1
-            continue
-        for i in range(len(data)):
-            time_of_point = daystart + i * time_step
-            if time_of_point > currenttime:
-                break # move to previous day
-            if data[i] is None:
-                continue
-            while point < maxtimepoint and time_points[point+1][0] <= time_of_point:
-                point += 1
-            # point points to the entry that was in effect at time_of_point
-            assert point < 0 or time_points[point][0] <= time_of_point
-            assert point == maxtimepoint or time_points[point+1][0] > time_of_point
-            if point < 0:
-                val = 0 # not in history -> disabled
-            else:
-                timer_type = time_points[point][1]
-                if timer_type == 1:
-                    val = barheight # win
-                elif timer_type == 2:
-                    val = -barheight # loss
-                else:
-                    val = 0
-            data[i] = add_to_tuple(data[i], val)
-    return data
-
-def drawsparklines( im,draw,data ):
+def drawBox(draw, x, filled = False):
+    x1 = x
+    x2 = x + boxwidth - 1
+    y1 = 0
+    y2 = height - 1
     color = (0,255)
-    w,h = im.size
-    m = h // 2
-    for i, d in enumerate(data):
-        if d is not None:
-            top = m - math.floor(m * d[0])
-            bottom = m + math.floor(m * d[1])
-            x = i * timepoints_size # data is as wide as the image
-            draw.rectangle([(x,top),(x+timepoints_size-1,bottom)],fill=color)
+    draw.rectangle([(x1,y1),(x2,y2)],outline=color)
+    if filled:
+        filloffset = fillmargin + 1
+        x1 = x1 + filloffset
+        x2 = x2 - filloffset
+        y1 = y1 + filloffset
+        y2 = y2 - filloffset
+        draw.rectangle([(x1,y1),(x2,y2)],fill=color)
+
+def drawBoxes(draw, completed):
+    for i in range(0,goal):
+        x = i * (boxwidth + boxseparation) + boxseparation
+        drawBox(draw, x, i < completed)
 
 def base64encodeImage( image ):
     output = BytesIO()
@@ -162,15 +111,15 @@ def formattime(secs):
     else:
         return "{:d}:{:02d}".format(mins // 60, mins % 60)
 
-data = get_data(getFileName(), int(today_start()) - day_offset * historydays)
+data = get_data(getFileName(), int(today_start()))
 WORK_TIMER_ID = 1
 completed_work = completed_timers(data, WORK_TIMER_ID)
-# time_points = get_time_points(data)
-# im = Image.new("LA", (width, height))
-# draw = ImageDraw.Draw(im)
-# drawsparklines(im,draw,time_points)
-# del draw
+im = Image.new("LA", (width, height))
+draw = ImageDraw.Draw(im)
+# drawBoxes(draw,5)
+drawBoxes(draw,completed_work)
+del draw
 
-print("{} complete".format(completed_work))
+print("| templateImage=" + base64encodeImage(im))
 print("---")
 print('Update | refresh=true')
