@@ -123,3 +123,4 @@ del draw
 print("| templateImage=" + base64encodeImage(im))
 print("---")
 print('Update | refresh=true')
+print("{:d} timers completed".format(completed_work))
