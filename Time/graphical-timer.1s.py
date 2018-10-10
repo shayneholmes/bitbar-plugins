@@ -205,7 +205,7 @@ del draw
 
 print("| templateImage=" + base64encodeImage(im))
 print("---")
-print("%s (%d%%)"%(formattime(remaining_secs()),percent*100))
 print('Work | terminal=false refresh=true ' + bashcommand('work'))
 print('Break | terminal=false refresh=true ' + bashcommand('break'))
 print('Disable | terminal=false refresh=true ' + bashcommand('disable'))
+print("%s (%d%%)"%(formattime(remaining_secs()),percent*100))
