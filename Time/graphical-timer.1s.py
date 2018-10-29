@@ -134,20 +134,23 @@ def complete():
 
 def settimer( newstatus ):
     global status
+    if status == newstatus:
+        return False
     status = newstatus
     record_active_timer()
+    return True
 
 def setwork():
-    settimer(1)
-    record_new_timer()
+    if settimer(1):
+        record_new_timer()
 
 def setbreak():
-    settimer(2)
-    record_new_timer()
+    if settimer(2):
+        record_new_timer()
 
 def setdisabled():
-    settimer(0)
-    record_new_timer()
+    if settimer(0):
+        record_new_timer()
 
 def checkforcompletion():
     if (status != 0 and status != 3) and remaining_secs() <= 0:
@@ -160,13 +163,14 @@ commands = {
         'disable': setdisabled,
         }
 
+starttime, status = loadStateFromFile(getFileName())
+
 if len(sys.argv) > 1:
     # commands
     if commands[sys.argv[1]]:
         commands[sys.argv[1]]()
         sys.exit()
 
-starttime, status = loadStateFromFile(getFileName())
 checkforcompletion()
 percent = elapsed_percent()
 
