@@ -17,11 +17,11 @@ import time
 import bisect
 
 height=15
-secondsperpixel=360
+secondsperpixel=300
 timepoints_size=1 # pixels chunked together
 workwindowhours=9
 historydays=7 # days to look back
-historydecay=0.5 # exponential decay constant (per day)
+historydecay=0.6 # exponential decay constant (per day)
 lookback=workwindowhours*3600
 width=lookback//secondsperpixel
 # one day in seconds
