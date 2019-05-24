@@ -78,7 +78,7 @@ def remaining_secs():
 
 def elapsed_percent():
     try:
-        return min(1, max(0, elapsed_secs() / duration_secs()))
+        return min(1,max(0,elapsed_secs() / duration_secs()))
     except:
         return 0
 
@@ -95,7 +95,7 @@ def getsprite():
 
 def base64encodeImage( image ):
     output = BytesIO()
-    image.save(output, format="PNG", dpi=(72, 72))
+    image.save(output, format="PNG", dpi=(72,72))
     contents = output.getvalue()
     imgData = base64.b64encode(contents).decode("utf-8")
     return imgData
@@ -184,51 +184,31 @@ def drawProgressBar(draw, percent):
     bartop = (height - barheight) // 2
     y1, y2 = bartop, bartop + barheight - 1
     lw = 1 # line width
-    color = (0, 255)
+    color = (0,255)
     if status == 0 or status == 3:
         # simple line
         mid = (y2 + y1) // 2
-        draw.line([(x1, mid),(x2, mid)], fill=color, width=lw)
+        draw.line([(x1,mid),(x2,mid)], fill=color, width=lw)
     else:
         # draw outline
         for i in range(lw):
-            draw.rectangle([(x1+i, y1+i),(x2-i, y2-i)], outline=color)
+            draw.rectangle([(x1+i,y1+i),(x2-i,y2-i)],outline=color)
         pad = 2
         # fill percentage
         x1 += lw+pad
         x2 -= lw+pad
         draw.rectangle([(x1, y1+lw+pad),(int(x1 + (x2 - x1) * percent), y2-(lw+pad))], fill=color)
 
-def hashToAngle(i):
-    return i * (i + 3) % 360
-
-def drawProgressPieSlice(im, percent):
-    scaleFactor = 4
-    imBig = Image.new("LA", (piesize * scaleFactor, piesize * scaleFactor))
-    draw = ImageDraw.Draw(imBig)
-    x1 = y1 = 0 * scaleFactor
-    x2 = y2 = piesize * scaleFactor - 1
-    lw = 1 * scaleFactor # line width
-    color = (0, 255)
-    middleAngle = hashToAngle(starttime)
-    startAngle = middleAngle - percent * 180
-    endAngle = middleAngle + percent * 180
-    draw.pieslice([(x1, y1),(x2, y2)], startAngle, endAngle, color)
-    draw.ellipse([(x1, y1),(x2, y2)], None, color, lw)
-    im.paste(imBig.resize((piesize, piesize), Image.LANCZOS), (width-piesize, 0, width, barheight))
-
 height = 15 # sprite is square, so width should be the same
 
 padding = 2
 barheight = 15
-barwidth = 15
-piesize = 15
+barwidth = 64
 width = height + padding + barwidth
 im = Image.new("LA", (width, height))
 draw = ImageDraw.Draw(im)
-# drawProgressBar(draw, percent)
-drawProgressPieSlice(im, percent)
-draw.bitmap((0, 0), getsprite(), fill=(0, 255))
+drawProgressBar(draw, percent)
+draw.bitmap((0,0), getsprite(), fill=(0,255))
 del draw
 
 print("| templateImage=" + base64encodeImage(im))
@@ -236,4 +216,4 @@ print("---")
 print('Work | terminal=false refresh=true ' + bashcommand('work'))
 print('Break | terminal=false refresh=true ' + bashcommand('break'))
 print('Disable | terminal=false refresh=true ' + bashcommand('disable'))
-print("%s (%d%%)"%(formattime(remaining_secs()), percent*100))
+print("%s (%d%%)"%(formattime(remaining_secs()),percent*100))
