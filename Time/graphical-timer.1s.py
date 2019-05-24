@@ -18,23 +18,27 @@ durationmultiplier=60
 statusinfo = {
         0: {
             'name': 'disabled',
+            'label': '',
             'duration': 0,
             'spritedata': 'iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAAAAAAevcqWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAB3RJTUUH4gIcEzYlKy/zdQAAABhJREFUCNdj/M+AClD5/5nQpIcanxHNfwC4oAQXpQbj4gAAAABJRU5ErkJggg==',
             },
         1: {
             'name': 'work',
+            'label': 'w',
             'duration': 15*durationmultiplier,
             'completionsound': 'glass',
             'spritedata': 'iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAAAAAAevcqWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAB3RJTUUH4gMBDyYyaBGYBQAAADVJREFUCNdj/M+AClD5/5mQRf4zMDAxYKr/j8RkQjMGm3qG/1CIpJ4Bn3qoJuLVI3iMaP4DAJT/Fvy6pMB/AAAAAElFTkSuQmCC',
             },
         2: {
             'name': 'break',
+            'label': 'b',
             'duration': 5*durationmultiplier,
             'completionsound': 'glass',
             'spritedata': 'iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAAAAAAevcqWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAB3RJTUUH4gIcFAANksncfwAAAC9JREFUCNdj/M+AClD5/5nQpFmQlDBC+QyMUMWMDAzo6rHphxlALf2MeNQzovkPADmXCSY5FP/rAAAAAElFTkSuQmCC',
             },
         3: {
             'name': 'completed',
+            'label': '',
             'duration': 0,
             'spritedata': 'iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAAAAAAevcqWAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAB3RJTUUH4gIcEzYlKy/zdQAAABhJREFUCNdj/M+AClD5/5nQpIcanxHNfwC4oAQXpQbj4gAAAABJRU5ErkJggg==', # same as disabled for now, could be a gold star?
             },
@@ -212,7 +216,6 @@ def drawProgressPieSlice(im, percent):
     draw.pieslice([(x1, y1),(x2, y2)], startAngle, endAngle, color)
     draw.ellipse([(x1, y1),(x2, y2)], None, color, lw)
     im.paste(imBig.resize((piesize, piesize), Image.LANCZOS), (width-piesize, 0, width, barheight))
-
 
 height = 15 # sprite is square, so width should be the same
 
