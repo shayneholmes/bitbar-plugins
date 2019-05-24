@@ -143,12 +143,13 @@ def base64encodeImage( image ):
     imgData = base64.b64encode(contents).decode("utf-8")
     return imgData
 
-def formattime(secs):
+def timeHHMM(secs):
     mins = secs // 60
     if mins == 0:
         return ""
-    else:
-        return "{:d}:{:02d}".format(mins // 60, mins % 60)
+    HH = mins // 60
+    MM = mins % 60
+    return "{:d}:{:02d}".format(HH, MM)
 
 data = get_data(getFileName(), int(today_start()) - day_offset * historydays)
 time_points = get_time_points(data)
@@ -160,5 +161,5 @@ del draw
 print("| templateImage=" + base64encodeImage(im))
 print("---")
 print('Update | refresh=true')
-print("{} transitions over {}".format(len(data), formattime(lookback)))
+print("{} transitions over {}".format(len(data), timeHHMM(lookback)))
 print("{} pixels".format(width))
