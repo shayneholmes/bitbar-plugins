@@ -19,10 +19,10 @@ import bisect
 height=15
 secondsperpixel=300
 timepoints_size=1 # pixels chunked together
-workwindowhours=9
+workwindowhours=8.5
 historydays=7 # days to look back
 historydecay=0.6 # exponential decay constant (per day)
-lookback=workwindowhours*3600
+lookback=int(workwindowhours*3600)
 width=lookback//secondsperpixel
 # one day in seconds
 day_offset=86400
@@ -36,7 +36,7 @@ def current_time():
     return time.mktime(time.localtime())
 
 def today_start():
-    now = datetime.now().replace(hour=6, minute=30, second=0, microsecond=0)
+    now = datetime.now().replace(hour=7, minute=0, second=0, microsecond=0)
     return time.mktime(now.timetuple())
 
 class FileSearcher(object):
