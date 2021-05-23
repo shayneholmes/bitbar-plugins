@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/env python3
 # coding=utf-8
 
 # Potential areas for investment:
@@ -133,7 +133,7 @@ def complete():
     record_completion()
     command = "open -g 'hammerspoon://timerComplete?timer={}'".format(getfield('name'))
     os.system(command)
-    command = "open -g 'bitbar://refreshPlugin?name=work-timer-count.*.py'"
+    command = "open -g 'xbar://refreshPlugin?name=work-timer-count.*.py'"
     os.system(command)
 
 def settimer( newstatus ):
